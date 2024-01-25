@@ -21,10 +21,10 @@ import {
   Selection,
 } from "@nextui-org/react";
 import { useAsyncList } from "@react-stately/data";
-import { format } from "date-fns";
+import { differenceInDays, format } from "date-fns";
 import dayjs from "dayjs";
 import { debounce } from "lodash";
-import { SearchIcon } from "lucide-react";
+import { CalendarIcon, SearchIcon } from "lucide-react";
 import Head from "next/head";
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -52,6 +52,12 @@ type AutocompleteData = {
   reference: string;
 };
 
+const TabsConstants = Object.freeze({
+  HOSTEL_PG: "Hostel/PG",
+  HOTEL: "Hotel",
+  APARTMENT: "Family Apartment",
+});
+
 export default function Home() {
   const router = useRouter();
   const pathname = usePathname();
@@ -59,11 +65,13 @@ export default function Home() {
 
   const [checkInDate, setCheckInDate] = useState<Date>();
   const [checkOutDate, setCheckOutDate] = useState<Date>();
-  const [bookingType, setBookingType] = useState<Selection>(new Set([]));
-  const [roomCategory, setRoomCategory] = useState<Selection>(new Set([]));
+  const [roomCategory, setRoomCategory] = useState("");
   const [roomType, setRoomType] = useState<Selection>(new Set([]));
   const [location, setLocation] = useState<Key>("");
   const [numberOfGuests, setNumberOfGuests] = useState<number>(1);
+  const [selectedTab, setSelectedTab] = useState<
+    (typeof TabsConstants)[keyof typeof TabsConstants]
+  >(TabsConstants.HOSTEL_PG);
 
   const createQueryString = (
     paramsToUpdate: Record<string, string>,
@@ -90,12 +98,15 @@ export default function Home() {
         createQueryString({
           "check-in": dayjs(checkInDate).format("YYYY-MM-DD"),
           "check-out": dayjs(checkOutDate).format("YYYY-MM-DD"),
-          bookingType: Array.from(bookingType).join(""),
           "room-category": Array.from(roomCategory).join(""),
           "room-type": Array.from(roomType).join(""),
           location: location.toString().split("&&")[0],
           "place-id": location.toString().split("&&")[1],
           "no-of-guests": numberOfGuests.toString(),
+          "property-type":
+            selectedTab.length > 0
+              ? selectedTab.replace("/", "-").replace(" ", "+")
+              : "",
         }),
     );
   };
@@ -134,11 +145,18 @@ export default function Home() {
         <title>Rofabs for users</title>
       </Head>
       <main
-        className={`relative grid h-screen w-full grid-cols-1 md:grid-cols-2`}
+        className={`relative grid h-screen w-full grid-cols-1 bg-gradient-to-br from-sky-400 to-blue-800 md:grid-cols-2`}
       >
-        <div className="relative h-full w-full">
-          <div className="relative flex h-full w-full items-stretch justify-center border-r bg-gradient-to-tr">
-            <Swiper
+        <div className="relative hidden h-full w-full md:block">
+          <div className="relative -mt-10 flex h-full w-full flex-col items-start justify-center gap-5 p-10">
+            <h1 className="pr-5 font-rubik text-7xl font-semibold text-white">
+              Find the best hotels, resorts and more for your next stay.
+            </h1>
+            <p className="max-w-xl text-2xl font-medium text-white">
+              Ac euismod vel sit maecenas id pellentesque eu sed consectetur.
+              Malesuada adipiscing sagittis vel nulla.
+            </p>
+            {/* <Swiper
               modules={[Pagination, Autoplay]}
               autoplay={{ delay: 2000, disableOnInteraction: true }}
               spaceBetween={50}
@@ -173,211 +191,260 @@ export default function Home() {
                   height={1000}
                 />
               </SwiperSlide>
-            </Swiper>
+            </Swiper> */}
           </div>
         </div>
-        <div className="relative -mt-20 flex h-full w-full items-center justify-center px-14 py-5">
-          {/* <BackgroundSvg /> */}
-          <form className="relative grid w-full grid-cols-2 gap-3 px-5 pb-12 pt-10">
-            <div className="relative col-span-2 flex w-full flex-1 items-center gap-2.5">
-              <Autocomplete
-                inputValue={inputValue}
-                isLoading={isLoading}
-                items={items}
-                label="Select a character"
-                labelPlacement="outside"
-                placeholder="Type to search..."
-                selectedKey={`${location && location}`}
-                onSelectionChange={(key) => {
-                  setLocation(key);
-                  if (key) {
-                    setInputValue(key.toString().split("&&")[0]);
-                  }
-                }}
-                variant="bordered"
-                onInputChange={setInputValue}
-                startContent={
-                  <SearchIcon
-                    className="mr-1 text-default-400"
-                    strokeWidth={2.5}
-                    size={20}
-                  />
-                }
-                clearButtonProps={{
-                  onClick: () => {
-                    setInputValue("");
-                    setLocation("");
-                    setItems([]);
-                  },
-                }}
-                inputProps={{
-                  classNames: {
-                    inputWrapper: "px-4 h-auto shadow-none border-1 rounded-md",
-                    input: "py-3.5 text-black placeholder:text-black",
-                    label: "font-medium text-sm -bottom-0.5",
-                  },
-                }}
-              >
-                {(item) => (
-                  <AutocompleteItem
-                    key={`${item.structured_formatting.main_text},${item.structured_formatting.secondary_text}&&${item.place_id}`}
-                    className="capitalize"
+        <div className="px-10 py-5">
+          <div className="relative -mt-10 flex h-full w-full items-center justify-center">
+            <form className="relative grid w-full grid-cols-2 gap-x-5 gap-y-2 rounded-3xl bg-white px-7 py-14 shadow-[0_4px_30px_3px_rgba(0,0,0,0.15)]">
+              <div className="absolute -top-8 left-0 z-[99] flex w-full items-center justify-center">
+                <div className="flex w-full max-w-md justify-center rounded-[99px] bg-white px-5 py-5 text-center font-rubik shadow-[0_4px_30px_3px_rgba(0,0,0,0.15)] *:flex-1">
+                  <div
+                    onClick={() => setSelectedTab(TabsConstants.HOSTEL_PG)}
+                    className={cn(
+                      "cursor-pointer font-semibold text-zinc-500",
+                      selectedTab === TabsConstants.HOSTEL_PG &&
+                        "text-zinc-950",
+                    )}
                   >
-                    <div className="flex flex-col">
-                      <span className="font-medium">
-                        {item.structured_formatting.main_text}
-                      </span>
-                      <span className="text-sm text-default-500">
-                        {item.structured_formatting.secondary_text}
-                      </span>
-                    </div>
-                  </AutocompleteItem>
-                )}
-              </Autocomplete>
-              <div className="flex w-auto flex-col items-start gap-2.5">
-                <Label>No of guests</Label>
-                <div className="flex w-full items-center gap-2">
-                  <UiButton
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setNumberOfGuests(numberOfGuests + 1);
-                    }}
-                    className="border bg-transparent py-3 text-black hover:bg-zinc-100"
+                    Hotel/PG
+                  </div>
+                  <div
+                    onClick={() => setSelectedTab(TabsConstants.HOTEL)}
+                    className={cn(
+                      "cursor-pointer font-medium text-zinc-500",
+                      selectedTab === TabsConstants.HOTEL && "text-zinc-950",
+                    )}
                   >
-                    +
-                  </UiButton>
-                  <UiButton className="bg-black py-3 hover:bg-zinc-950">
-                    {numberOfGuests}
-                  </UiButton>
-                  <UiButton
-                    onClick={(e) => {
-                      e.preventDefault();
-                      if (numberOfGuests > 1) {
-                        setNumberOfGuests(numberOfGuests - 1);
-                      }
-                    }}
-                    className="border bg-transparent py-3 text-black hover:bg-zinc-100"
+                    Hostels
+                  </div>
+                  <div
+                    onClick={() => setSelectedTab(TabsConstants.APARTMENT)}
+                    className={cn(
+                      "cursor-pointer font-medium text-zinc-500",
+                      selectedTab === TabsConstants.APARTMENT &&
+                        "text-zinc-950",
+                    )}
                   >
-                    -
-                  </UiButton>
+                    Apartments
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="relative col-span-2 grid grid-cols-2 gap-3">
-              <div className="flex w-auto flex-col items-start gap-2.5">
-                <Label>Check in</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "h-auto w-full justify-start rounded-md border-1 px-4 py-3.5 text-left font-normal shadow-none",
-                        !checkInDate && "text-muted-foreground",
-                      )}
-                    >
-                      {/* <CalendarIcon className="mr-2 h-4 w-4" /> */}
-                      {checkInDate ? (
-                        format(checkInDate, "PPP")
-                      ) : (
-                        <span>Pick a date</span>
-                      )}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={checkInDate}
-                      onSelect={setCheckInDate}
-                      initialFocus
+              <div className="relative col-span-2 flex w-full flex-1 items-center gap-2.5">
+                <Autocomplete
+                  inputValue={inputValue}
+                  isLoading={isLoading}
+                  items={items}
+                  label="Location"
+                  labelPlacement="outside"
+                  placeholder="Search for a location"
+                  selectedKey={`${location && location}`}
+                  onSelectionChange={(key) => {
+                    setLocation(key);
+                    if (key) {
+                      setInputValue(key.toString().split("&&")[0]);
+                    }
+                  }}
+                  // variant="bordered"
+                  onInputChange={setInputValue}
+                  startContent={
+                    <SearchIcon
+                      className="mr-1 text-default-400"
+                      strokeWidth={2.5}
+                      size={20}
                     />
-                  </PopoverContent>
-                </Popover>
-              </div>
-              <Badge className="absolute left-[calc(50%-2.5em)] top-[calc(50%-1px)] z-50 px-2 py-1">
-                2 Days
-              </Badge>
-              <div className="flex w-auto flex-col items-start gap-2.5">
-                <Label>Check out</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "h-auto w-full justify-start rounded-md border-1 px-4 py-3.5 pl-7 text-left font-normal shadow-none",
-                        !checkOutDate && "text-muted-foreground",
-                      )}
+                  }
+                  clearButtonProps={{
+                    onClick: () => {
+                      setInputValue("");
+                      setLocation("");
+                      setItems([]);
+                    },
+                  }}
+                  inputProps={{
+                    classNames: {
+                      inputWrapper:
+                        "px-4 h-auto shadow-none border-1 rounded-xl",
+                      input: "py-3.5 text-black placeholder:text-zinc-500",
+                      label: "font-medium text-lg -bottom-1.5",
+                      base: "font-rubik",
+                    },
+                  }}
+                >
+                  {(item) => (
+                    <AutocompleteItem
+                      key={`${item.structured_formatting.main_text},${item.structured_formatting.secondary_text}&&${item.place_id}`}
+                      className="capitalize"
                     >
-                      {/* <CalendarIcon className="mr-2 h-4 w-4" /> */}
-                      {checkOutDate ? (
-                        format(checkOutDate, "PPP")
-                      ) : (
-                        <span>Pick a date</span>
-                      )}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={checkOutDate}
-                      onSelect={setCheckOutDate}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
+                      <div className="flex flex-col">
+                        <span className="font-medium">
+                          {item.structured_formatting.main_text}
+                        </span>
+                        <span className="text-sm text-default-500">
+                          {item.structured_formatting.secondary_text}
+                        </span>
+                      </div>
+                    </AutocompleteItem>
+                  )}
+                </Autocomplete>
+                <div className="flex w-auto flex-col items-start gap-0 font-rubik">
+                  <Label className="text-lg">No of guests</Label>
+                  <div className="flex w-full items-center gap-2">
+                    <UiButton
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setNumberOfGuests(numberOfGuests + 1);
+                      }}
+                      className="rounded-xl border bg-transparent py-3.5 text-zinc-500 hover:bg-zinc-100"
+                    >
+                      +
+                    </UiButton>
+                    <button className="px-3 py-3.5 text-lg">
+                      {numberOfGuests}
+                    </button>
+                    <UiButton
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (numberOfGuests > 1) {
+                          setNumberOfGuests(numberOfGuests - 1);
+                        }
+                      }}
+                      className="rounded-xl border bg-transparent py-3.5 text-zinc-500 hover:bg-zinc-100"
+                    >
+                      -
+                    </UiButton>
+                  </div>
+                </div>
               </div>
-            </div>
-            <Select
-              color="default"
-              label="Room Type"
-              labelPlacement="outside"
-              placeholder="Select Booking Type"
-              selectedKeys={roomType}
-              onSelectionChange={setRoomType}
-              variant="bordered"
-              classNames={{
-                trigger: "px-4 h-auto shadow-none border-1 py-3.5 rounded-md",
-                value: "text-black",
-                label: "font-medium text-sm -bottom-0.5",
-              }}
-            >
-              {RoomTypeEnum.map((type) => (
-                <SelectItem key={type} value={type}>
-                  {type}
-                </SelectItem>
-              ))}
-            </Select>
-            <Select
-              color="default"
-              label="Room Category"
-              labelPlacement="outside"
-              placeholder="Select Room Category"
-              selectedKeys={roomCategory}
-              onSelectionChange={setRoomCategory}
-              variant="bordered"
-              classNames={{
-                trigger: "px-4 h-auto shadow-none border-1 py-3.5 rounded-md",
-                value: "text-black",
-                label: "font-medium text-sm -bottom-0.5",
-              }}
-            >
-              {RoomCategoryEnum.map((category) => (
-                <SelectItem key={category} value={category}>
-                  {category}
-                </SelectItem>
-              ))}
-            </Select>
+              <div className="relative col-span-2 grid grid-cols-2 gap-3 font-rubik">
+                <div className="flex w-auto flex-col items-start gap-1.5">
+                  <Label className="text-lg">Check in</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant={"secondary"}
+                        className={cn(
+                          "h-auto w-full justify-start rounded-xl border-1 px-4 py-3.5 text-left font-normal shadow-none",
+                          !checkInDate && "text-zinc-500",
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {checkInDate ? (
+                          format(checkInDate, "PPP")
+                        ) : (
+                          <span>Pick a date</span>
+                        )}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={checkInDate}
+                        onSelect={setCheckInDate}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                {checkInDate && checkOutDate && (
+                  <Badge className="absolute left-[calc(50%-2.5em)] top-[calc(50%-1px)] z-50 px-2 py-1">
+                    {differenceInDays(checkOutDate, checkInDate)}{" "}
+                    {differenceInDays(checkOutDate, checkInDate) > 1
+                      ? "Days"
+                      : "Day"}
+                  </Badge>
+                )}
+                <div className="flex w-auto flex-col items-start gap-1.5 font-rubik">
+                  <Label className="text-lg">Check out</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant={"secondary"}
+                        className={cn(
+                          "h-auto w-full justify-start rounded-xl border-1 px-4 py-3.5 pl-7 text-left font-normal shadow-none",
+                          !checkOutDate && "text-zinc-500",
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {checkOutDate ? (
+                          format(checkOutDate, "PPP")
+                        ) : (
+                          <span>Pick a date</span>
+                        )}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={checkOutDate}
+                        onSelect={setCheckOutDate}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+              </div>
+              {selectedTab === TabsConstants.HOSTEL_PG && (
+                <div className="col-span-2 mt-1.5 grid grid-cols-2 gap-2.5">
+                  <Select
+                    color="default"
+                    label="Room Type"
+                    labelPlacement="outside"
+                    placeholder="Select Booking Type"
+                    selectedKeys={roomType}
+                    onSelectionChange={setRoomType}
+                    // variant="bordered"
+                    classNames={{
+                      trigger:
+                        "px-4 h-auto shadow-none border-1 py-3.5 rounded-xl",
+                      innerWrapper: "placeholder:text-zinc-500 text-zinc-500",
+                      value: "text-zinc-500",
+                      base: "font-rubik",
+                      label: "font-medium text-lg bottom-0.5",
+                    }}
+                  >
+                    {RoomTypeEnum.map((type) => (
+                      <SelectItem key={type} value={type}>
+                        {type}
+                      </SelectItem>
+                    ))}
+                  </Select>
+                  <div className="flex w-full flex-col justify-end gap-1.5 font-rubik">
+                    <Label className="text-lg font-medium">Booking Type</Label>
+                    <div className="grid w-full grid-cols-2 items-end gap-1.5 font-rubik font-medium ">
+                      {RoomCategoryEnum.map((category) => (
+                        <div
+                          onClick={() => setRoomCategory(category)}
+                          className={cn(
+                            "flex-1 cursor-pointer rounded-xl bg-zinc-100 px-5 py-3 text-center duration-100",
+                            category === roomCategory &&
+                              " bg-sky-500 text-white",
+                          )}
+                          key={category}
+                        >
+                          {category}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
 
-            <div className="absolute -bottom-7 w-full px-4 py-2">
-              <button
-                onClick={handleSubmit}
-                className="w-full rounded-lg bg-zinc-800 py-3 text-white shadow-[0px_5px_0px_0px_rgb(9,9,11)] hover:bg-zinc-700 active:translate-y-1 active:bg-zinc-950"
-              >
-                Submit
-              </button>
-            </div>
-          </form>
+              <div className="absolute -bottom-7 flex w-full items-center justify-center px-4 py-2">
+                <button
+                  onClick={handleSubmit}
+                  className="rounded-[99px] bg-sky-500 px-10 py-3 text-xl font-semibold text-white shadow-[0_15px_30px_0px_rgba(0,0,0,0.2)] duration-100 hover:bg-zinc-700 active:translate-y-1 active:bg-zinc-950"
+                >
+                  Search
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       </main>
     </>
   );
 }
+
+//shadow-[0px_5px_0px_0px_rgb(9,9,11)]
+//shadow-[0_6px_30px_0px_rgba(0,0,0,0.5)]

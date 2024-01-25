@@ -20,10 +20,6 @@ body {
   font-family: "Inter", sans-serif;
 }
 
-.mesh-bg {
-  background: url("/public/Whangaehu.png") no-repeat center center fixed !important;
-}
-
 /* div[data-slot="input-wrapper"] {
   border-radius: 0.5rem !important;
   border: 1px solid #e2e8f0 !important;
@@ -33,3 +29,27 @@ label[data-slot="label"] {
   border-radius: 0.875rem !important;
   font-weight: 500 !important;
 } */
+
+.search .swiper-pagination {
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem 0;
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.search .swiper-pagination-bullet {
+  background-color: rgba(255, 255, 255, 0.5) !important;
+  opacity: 1 !important;
+  width: 10px;
+  height: 6px;
+  border-radius: 25px;
+}
+
+.search .swiper-pagination-bullet-active {
+  background-color: #fff !important;
+}

@@ -91,8 +91,8 @@ const Search: FC = () => {
 
   return (
     <div className="bg-blue-50">
-      <div className="mx-auto flex w-full max-w-screen-xl items-start justify-start gap-5">
-        <div className="my-5 flex h-full min-h-screen w-[250px] flex-col items-start justify-start rounded-xl bg-white *:w-full *:border-b *:border-indigo-50 *:p-5">
+      <div className="mx-auto flex min-h-screen w-full max-w-screen-xl flex-col items-start justify-start px-2.5 md:flex-row md:gap-5 lg:px-0">
+        <div className="my-5 flex h-full w-full flex-row items-start justify-start rounded-xl bg-white *:border-b *:border-indigo-50 *:p-5 md:w-[275px] md:flex-col md:*:w-full">
           <div className="flex flex-col gap-2.5">
             <div
               onClick={() =>
@@ -297,17 +297,19 @@ const Search: FC = () => {
               </div>
             ))}
           {!loading && searchRooms?.data.length === 0 && (
-            <div className="flex items-center justify-start gap-2 px-2.5 py-5 font-rubik text-lg font-semibold">
+            <div className="flex items-center justify-start gap-2 px-2.5 font-rubik text-lg font-semibold md:py-5">
               No results found for{" "}
               <span className="text-base text-blue-600">
-                {location?.split(",")[0]} {location?.split(",")[1]}
+                {location?.split(",")[0]}, {location?.split(",")[1]}
               </span>
             </div>
           )}
           {!loading && searchRooms?.data && searchRooms.data.length > 0 && (
-            <div className="flex items-center justify-start gap-2 px-2.5 pb-2.5 pt-5 text-left font-rubik text-base font-semibold">
+            <div className="flex items-center justify-start gap-2 px-2.5 pb-2.5 text-left font-rubik text-base font-semibold md:pt-5">
               Showing search results for{" "}
-              <span className="text-base text-blue-600">{location}</span>
+              <span className="text-base text-blue-600">
+                {location?.split(",")[0]}, {location?.split(",")[1]}
+              </span>
             </div>
           )}
           {searchRooms?.data.map((prop, i) => {
@@ -319,7 +321,7 @@ const Search: FC = () => {
                 key={prop._id}
                 className="relative grid w-full cursor-pointer grid-cols-5 rounded-xl bg-white p-3"
               >
-                <div className="relative col-span-2">
+                <div className="search relative col-span-2">
                   <Swiper
                     modules={[Pagination, Autoplay]}
                     autoplay={{ delay: 2000, disableOnInteraction: true }}
@@ -329,11 +331,10 @@ const Search: FC = () => {
                     pagination={{ clickable: true }}
                     // onSwiper={(swiper) => console.log(swiper)}
                     // onSlideChange={() => console.log("slide change")}
-                    //
                   >
                     {prop.images.map((image, k) => (
                       <SwiperSlide key={k + image.url}>
-                        <Avatar className="h-60 w-full rounded-md">
+                        <Avatar className="h-60 w-full rounded-xl">
                           <AvatarImage
                             src={image.url}
                             alt={image.label}
@@ -365,7 +366,7 @@ const Search: FC = () => {
                       {prop.name}
                     </h1>
                     <div className="mt-1 flex items-center gap-1.5">
-                      <span className="max-w-md text-sm font-medium text-zinc-700">
+                      <span className="max-w-md text-sm font-medium text-zinc-500">
                         {prop.address}
                       </span>
                     </div>
@@ -374,11 +375,11 @@ const Search: FC = () => {
                     <h3 className="font-rubik text-sm font-medium">
                       Facilities:
                     </h3>
-                    <div className="w-full">
+                    <div className="flex w-full flex-wrap items-center justify-start gap-1.5">
                       {Array.from({ length: 3 }).map((_, index) => {
                         if (prop.facilities.length > index) {
                           return (
-                            <Badge key={index} variant={"secondary"}>
+                            <Badge key={index} variant={"default"}>
                               {prop.facilities[index]}
                             </Badge>
                           );
