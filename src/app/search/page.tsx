@@ -92,8 +92,8 @@ const Search: FC = () => {
   return (
     <div className="bg-blue-50">
       <div className="mx-auto flex min-h-screen w-full max-w-screen-xl flex-col items-start justify-start px-2.5 md:flex-row md:gap-5 lg:px-0">
-        <div className="my-5 flex h-full w-full flex-row items-start justify-start rounded-xl bg-white *:border-b *:border-indigo-50 *:p-5 md:w-[275px] md:flex-col md:*:w-full">
-          <div className="flex flex-col gap-2.5">
+        <div className="my-5 flex h-full w-full flex-row items-start justify-start overflow-x-auto rounded-xl bg-white *:w-full *:text-nowrap *:border-b *:border-indigo-50 *:p-5 md:w-[275px] md:flex-col">
+          <div className="flex flex-col gap-2.5 *:w-full">
             <div
               onClick={() =>
                 setActiveStates((prev) => ({
@@ -298,18 +298,49 @@ const Search: FC = () => {
             ))}
           {!loading && searchRooms?.data.length === 0 && (
             <div className="flex items-center justify-start gap-2 px-2.5 font-rubik text-lg font-semibold md:py-5">
-              No results found for{" "}
-              <span className="text-base text-blue-600">
-                {location?.split(",")[0]}, {location?.split(",")[1]}
-              </span>
+              No properties found for{" "}
+              {location?.length ? (
+                <span className="text-base text-blue-600">
+                  {location?.split(",")[0]}, {location?.split(",")[1]}
+                </span>
+              ) : (
+                <span className="text-base text-blue-600">
+                  {propertyType
+                    ? propertyType
+                    : roomType
+                      ? roomType
+                      : roomCategory
+                        ? roomCategory
+                        : "All"}{" "}
+                  rooms
+                </span>
+              )}
             </div>
           )}
           {!loading && searchRooms?.data && searchRooms.data.length > 0 && (
             <div className="flex items-center justify-start gap-2 px-2.5 pb-2.5 text-left font-rubik text-base font-semibold md:pt-5">
-              Showing search results for{" "}
-              <span className="text-base text-blue-600">
-                {location?.split(",")[0]}, {location?.split(",")[1]}
-              </span>
+              {location?.length ? (
+                <span>
+                  Showing search results for{" "}
+                  <span className="text-base text-blue-600">
+                    {location?.split(",")[0]}, {location?.split(",")[1]}
+                  </span>
+                </span>
+              ) : (
+                <span>
+                  Showing search results for{" "}
+                  <span className="text-base text-blue-600">
+                    {propertyType
+                      ? propertyType
+                      : roomType
+                        ? roomType
+                        : roomCategory
+                          ? roomCategory
+                          : "All"}{" "}
+                    rooms
+                  </span>
+                </span>
+              )}
             </div>
           )}
           {searchRooms?.data.map((prop, i) => {
@@ -319,9 +350,9 @@ const Search: FC = () => {
                   "rooms" + "?" + createQueryString({ "property-id": prop._id })
                 }
                 key={prop._id}
-                className="relative grid w-full cursor-pointer grid-cols-5 rounded-xl bg-white p-3"
+                className="relative grid w-full cursor-pointer grid-cols-5 gap-2.5 rounded-2xl bg-white p-3 sm:gap-0"
               >
-                <div className="search relative col-span-2">
+                <div className="search relative col-span-5 sm:col-span-2">
                   <Swiper
                     modules={[Pagination, Autoplay]}
                     autoplay={{ delay: 2000, disableOnInteraction: true }}
@@ -350,7 +381,7 @@ const Search: FC = () => {
                     ))}
                   </Swiper>
                 </div>
-                <div className="col-span-2 flex flex-col justify-between p-5">
+                <div className="col-span-5 flex flex-col justify-between gap-2.5 p-3 sm:col-span-2 sm:gap-0 sm:p-5">
                   <div className="flex flex-col gap-1 *:w-full">
                     <div className="flex gap-1">
                       {Array.from({ length: 5 }).map((_, index) => {

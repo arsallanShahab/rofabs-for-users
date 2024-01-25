@@ -47,7 +47,9 @@ const Navbar: FC = (props: Props) => {
       )}
     >
       <div className="flex items-center justify-between border-b px-10 py-5 backdrop-blur-sm">
-        <div className="font-sora font-semibold">Rofabs</div>
+        <Link href="/" className="font-sora font-semibold">
+          Rofabs
+        </Link>
         <div className="hidden items-center justify-center gap-2.5 sm:flex">
           {links.map((link) => (
             <Link
@@ -61,6 +63,7 @@ const Navbar: FC = (props: Props) => {
               {link.name}
             </Link>
           ))}
+          L
         </div>
         <div className="flex items-center justify-end">
           <Button variant={"outline"} className="rounded-lg">
