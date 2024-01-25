@@ -48,7 +48,7 @@ const Navbar: FC = (props: Props) => {
     >
       <div className="flex items-center justify-between border-b px-10 py-5 backdrop-blur-sm">
         <div className="font-sora font-semibold">Rofabs</div>
-        <div className="flex items-center justify-center gap-2.5">
+        <div className="hidden items-center justify-center gap-2.5 sm:flex">
           {links.map((link) => (
             <Link
               key={link.name}

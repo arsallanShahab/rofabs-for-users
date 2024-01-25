@@ -145,10 +145,10 @@ export default function Home() {
         <title>Rofabs for users</title>
       </Head>
       <main
-        className={`relative grid h-screen w-full grid-cols-1 bg-gradient-to-br from-sky-400 to-blue-800 md:grid-cols-2`}
+        className={`relative grid w-full grid-cols-1 bg-gradient-to-br from-sky-400 to-blue-800 py-14 md:grid-cols-2`}
       >
         <div className="relative hidden h-full w-full md:block">
-          <div className="relative -mt-10 flex h-full w-full flex-col items-start justify-center gap-5 p-10">
+          <div className="relative flex h-full w-full flex-col items-start justify-center gap-5 p-10">
             <h1 className="pr-5 font-rubik text-7xl font-semibold text-white">
               Find the best hotels, resorts and more for your next stay.
             </h1>
@@ -194,9 +194,9 @@ export default function Home() {
             </Swiper> */}
           </div>
         </div>
-        <div className="px-10 py-5">
-          <div className="relative -mt-10 flex h-full w-full items-center justify-center">
-            <form className="relative grid w-full grid-cols-2 gap-x-5 gap-y-2 rounded-3xl bg-white px-7 py-14 shadow-[0_4px_30px_3px_rgba(0,0,0,0.15)]">
+        <div className="px-5 py-5 sm:px-10">
+          <div className="relative flex h-full w-full items-center justify-center">
+            <form className="relative grid w-full grid-cols-1 gap-x-5 gap-y-2 rounded-3xl bg-white px-7 py-14 shadow-[0_4px_30px_3px_rgba(0,0,0,0.15)] sm:grid-cols-2">
               <div className="absolute -top-8 left-0 z-[99] flex w-full items-center justify-center">
                 <div className="flex w-full max-w-md justify-center rounded-[99px] bg-white px-5 py-5 text-center font-rubik shadow-[0_4px_30px_3px_rgba(0,0,0,0.15)] *:flex-1">
                   <div
@@ -230,7 +230,7 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-              <div className="relative col-span-2 flex w-full flex-1 items-center gap-2.5">
+              <div className="relative col-span-1 grid w-full flex-1 grid-cols-1 items-center gap-2.5 sm:col-span-2 sm:flex">
                 <Autocomplete
                   inputValue={inputValue}
                   isLoading={isLoading}
@@ -287,9 +287,9 @@ export default function Home() {
                     </AutocompleteItem>
                   )}
                 </Autocomplete>
-                <div className="flex w-auto flex-col items-start gap-0 font-rubik">
+                <div className="flex w-full flex-col items-start gap-0 font-rubik sm:w-auto">
                   <Label className="text-lg">No of guests</Label>
-                  <div className="flex w-full items-center gap-2">
+                  <div className="flex w-full items-center gap-2 *:flex-1">
                     <UiButton
                       onClick={(e) => {
                         e.preventDefault();
@@ -316,8 +316,8 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-              <div className="relative col-span-2 grid grid-cols-2 gap-3 font-rubik">
-                <div className="flex w-auto flex-col items-start gap-1.5">
+              <div className="col-span-2 grid  grid-cols-1 gap-2.5 sm:grid-cols-2">
+                <div className="flex w-auto flex-col items-start gap-1.5 font-rubik">
                   <Label className="text-lg">Check in</Label>
                   <Popover>
                     <PopoverTrigger asChild>
@@ -385,7 +385,7 @@ export default function Home() {
                 </div>
               </div>
               {selectedTab === TabsConstants.HOSTEL_PG && (
-                <div className="col-span-2 mt-1.5 grid grid-cols-2 gap-2.5">
+                <div className="col-span-2 mt-2 grid  grid-cols-1 gap-2.5 sm:grid-cols-2">
                   <Select
                     color="default"
                     label="Room Type"
