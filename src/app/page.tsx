@@ -194,11 +194,11 @@ export default function Home() {
             </Swiper> */}
           </div>
         </div>
-        <div className="px-5 py-5 sm:px-10">
+        <div className="px-2.5 py-5 pb-10 sm:px-10 sm:pb-5">
           <div className="relative flex h-full w-full items-center justify-center">
-            <form className="relative grid w-full grid-cols-1 gap-y-2 rounded-3xl bg-white px-7 py-14 shadow-[0_4px_30px_3px_rgba(0,0,0,0.15)] sm:grid-cols-2 sm:gap-x-5">
+            <form className="relative grid w-full grid-cols-1 gap-y-2 rounded-3xl bg-white px-5 py-14 shadow-[0_4px_30px_3px_rgba(0,0,0,0.15)] sm:grid-cols-2 sm:gap-x-5 sm:px-7">
               <div className="absolute -top-8 left-0 z-[99] flex w-full items-center justify-center">
-                <div className="flex w-full max-w-md justify-center rounded-[99px] bg-white px-5 py-5 text-center font-rubik shadow-[0_4px_30px_-12px_rgba(0,0,0,0.15)] *:flex-1">
+                <div className="flex w-full max-w-md justify-center rounded-2xl bg-white p-5 text-center font-rubik shadow-[0_4px_30px_-12px_rgba(0,0,0,0.15)] *:flex-1 sm:rounded-[99px]">
                   <div
                     onClick={() => setSelectedTab(TabsConstants.HOSTEL_PG)}
                     className={cn(
