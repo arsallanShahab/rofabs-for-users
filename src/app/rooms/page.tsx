@@ -142,16 +142,16 @@ const Page: FC = (props: Props) => {
     );
   }
   return (
-    <div className="relative top-0 h-full min-h-screen">
+    <div className="top-0 h-full min-h-screen">
       <div className="w-full bg-blue-500 text-white">
-        <div className="mx-auto flex w-full max-w-screen-xl items-end gap-2.5 p-5">
+        <div className="mx-auto flex w-full max-w-screen-xl flex-wrap items-end gap-2.5 p-5">
           <Input
             label="Area or Landmark"
             placeholder="Area or Landmark"
             labelPlacement="outside"
             classNames={{
               inputWrapper: "rounded-md",
-              base: "max-w-xs w-full font-rubik",
+              base: "font-rubik w-full max-w-sm",
               input: "text-sm font-medium text-black",
               label: "text-[#fff_!important] font-medium text-sm",
             }}
@@ -164,8 +164,8 @@ const Page: FC = (props: Props) => {
             labelPlacement="outside"
             classNames={{
               inputWrapper: "rounded-md",
-              base: "font-rubik text-sm max-w-[250px]",
-              input: "font-rubik text-sm font-medium text-black",
+              base: "font-rubik text-sm w-full sm:max-w-[250px]",
+              input: "font-medium text-black",
               label: "text-[#fff_!important] font-medium font-rubik text-sm",
             }}
             value={checkInDate}
@@ -186,9 +186,9 @@ const Page: FC = (props: Props) => {
             labelPlacement="outside"
             classNames={{
               inputWrapper: "rounded-md",
-              base: "font-rubik text-sm max-w-[250px]",
-              input: "font-rubik text-sm font-medium text-black",
-              label: "text-[#fff_!important] font-medium font-rubik text-sm",
+              base: "font-rubik text-sm w-full max-w-[250px]",
+              input: "font-medium text-black",
+              label: "text-[#fff_!important] font-medium font-rubik",
             }}
             value={checkOutDate}
             onChange={(e) => {
@@ -209,7 +209,7 @@ const Page: FC = (props: Props) => {
               labelPlacement="outside"
               classNames={{
                 inputWrapper: "rounded-md",
-                base: "font-rubik text-sm max-w-[250px]",
+                base: "font-rubik text-sm w-full flex-1",
                 input: "text-sm font-medium text-black",
                 label: "text-[#fff_!important] font-medium text-sm",
               }}
@@ -225,14 +225,14 @@ const Page: FC = (props: Props) => {
               }}
             />
           )}
-          <button className="flex flex-1 items-center justify-center rounded-md bg-white px-4 py-2.5 text-sm font-semibold text-blue-500">
+          {/* <button className="flex flex-1 items-center justify-center rounded-md bg-white px-4 py-2.5 text-sm font-semibold text-blue-500">
             Search
-          </button>
+          </button> */}
         </div>
       </div>
       <div className="relative mx-auto flex max-w-screen-xl flex-col items-start justify-start gap-5 bg-white *:w-full">
         <div className="grid w-full grid-cols-6 gap-5 bg-white p-5">
-          <div className="col-span-5 flex flex-col items-start justify-center gap-2 *:w-full">
+          <div className="col-span-6 flex flex-col items-start justify-center gap-2 *:w-full">
             <div className="flex gap-1">
               {Array.from({ length: 5 }).map((_, index) => {
                 return (
@@ -246,13 +246,13 @@ const Page: FC = (props: Props) => {
             <h3 className="font-inter text-2xl font-semibold">
               {property?.name}
             </h3>
-            <div className="flex items-center gap-1">
+            <div className="flex flex-wrap items-center gap-1">
               <Map className="h-4 w-4 text-blue-400" />{" "}
               <span className="text-sm">{property?.address}</span>
             </div>
           </div>
 
-          <div className="col-span-4">
+          <div className="col-span-6 sm:col-span-4">
             <Swiper
               modules={[Pagination, Autoplay]}
               autoplay={{ delay: 2000, disableOnInteraction: true }}
@@ -267,7 +267,7 @@ const Page: FC = (props: Props) => {
                 property?.images.length > 0 &&
                 property.images.map((image, k) => (
                   <SwiperSlide key={k + image.url}>
-                    <Avatar className="h-96 w-full rounded-lg">
+                    <Avatar className="h-60 w-full rounded-lg sm:h-96">
                       <AvatarImage
                         src={image.url}
                         alt={image.url}
@@ -283,7 +283,7 @@ const Page: FC = (props: Props) => {
                 ))}
             </Swiper>
           </div>
-          <div className="col-span-2 flex flex-col gap-2.5 *:w-full *:rounded-lg">
+          <div className="col-span-6 flex flex-col gap-2.5 *:w-full *:rounded-lg sm:col-span-2">
             <div className="flex-1 bg-amber-50 p-5">
               <div className="flex h-full flex-col justify-stretch gap-1 *:w-full">
                 <div className="flex items-center justify-between">
@@ -347,44 +347,44 @@ const Page: FC = (props: Props) => {
       </div>
       <div
         ref={tabBar}
-        className="sticky left-0 top-[80px] w-full border-y bg-white text-black"
+        className="sticky left-0 top-[80px] z-[89] w-full overflow-x-auto border-y bg-white text-black"
       >
-        <div className="mx-auto flex max-w-screen-xl justify-start">
+        <div className="mx-auto flex max-w-screen-xl justify-start *:w-full">
           <Link
             href={"#room-options"}
-            className="text-lg *:px-5 *:py-6 *:font-rubik"
+            className="break-keep font-medium *:px-5 *:py-6 *:font-rubik"
           >
             <button className="flex items-center gap-1.5">Room Options</button>
           </Link>
           <Link
             href={"#amenities"}
-            className="text-lg *:px-5 *:py-6 *:font-rubik"
+            className="font-medium *:px-5 *:py-6 *:font-rubik"
           >
             <button className="flex items-center gap-1.5">Amenities</button>
           </Link>
           <Link
             href={"#guest-reviews"}
-            className="text-lg *:px-5 *:py-6 *:font-rubik"
+            className="font-medium *:px-5 *:py-6 *:font-rubik"
           >
             <button className="flex items-center gap-1.5">Guest Reviews</button>
           </Link>
           <Link
             href={"#property-policies"}
-            className="text-lg *:px-5 *:py-6 *:font-rubik"
+            className="font-medium *:px-5 *:py-6 *:font-rubik"
           >
-            <button className="flex items-center gap-1.5">
+            <button className="flex items-center gap-1.5 font-medium">
               Property Policies
             </button>
           </Link>
           <Link
             href={"#location"}
-            className="text-lg *:px-5 *:py-6 *:font-rubik"
+            className="font-medium *:px-5 *:py-6 *:font-rubik"
           >
             <button className="flex items-center gap-1.5">Location</button>
           </Link>
         </div>
       </div>
-      <div className="w-full bg-blue-50" id="room-options">
+      <div className="w-full bg-blue-50 pt-5" id="room-options">
         <div className="mx-auto flex max-w-screen-xl flex-col items-start justify-start gap-5 pb-20 *:w-full">
           {groupedRooms &&
             groupedRooms.length > 0 &&
@@ -403,13 +403,16 @@ const Page: FC = (props: Props) => {
                     roomType={room.roomType}
                     roomCategory={room.roomCategory}
                     data={room.data}
+                    totalGuests={
+                      numberOfGuests ? Number(numberOfGuests) : undefined
+                    }
                   />
                 );
               },
             )}
           <div
             id="amenities"
-            className="flex flex-col gap-2.5 rounded-xl bg-white  *:w-full"
+            className="flex flex-col gap-2.5 rounded-xl border  bg-white *:w-full"
           >
             <div className="border-b p-5">
               <h2 className="font-inter text-2xl font-semibold">
@@ -449,7 +452,10 @@ const Page: FC = (props: Props) => {
               ))}
             </div>
           </div>
-          <div id="property-policies" className="rounded-xl bg-white *:w-full">
+          <div
+            id="property-policies"
+            className="rounded-xl border bg-white *:w-full"
+          >
             <div className="border-b p-5">
               <h2 className="font-inter text-2xl font-semibold">
                 Property Policies
@@ -476,29 +482,34 @@ const Page: FC = (props: Props) => {
                 ))}
             </div>
           </div>
-          <div id="location" className="rounded-xl bg-white *:w-full">
+          <div id="location" className="rounded-xl border bg-white *:w-full">
             <div className="border-b p-5">
               <h2 className="font-inter text-2xl font-semibold">
                 {property.name} Location
               </h2>
             </div>
-            <div className="grid grid-cols-5">
-              <div className="col-span-4 border-r p-5">
+            <div className="grid grid-cols-7">
+              <div className="col-span-7 border-r p-5 sm:col-span-5">
                 <MapComponent
-                  className="h-96 w-full rounded-lg"
+                  className="h-96 w-full rounded-lg border"
                   coordinate={{
                     lat: property.coOfLocation.coordinates[0],
                     lng: property.coOfLocation.coordinates[1],
                   }}
                 />
               </div>
-              <div className="col-span-1 flex flex-col items-start justify-start gap-2.5 p-5">
-                Nearby Places
+              <div className="col-span-7 flex flex-col items-start justify-start gap-2.5 p-5 sm:col-span-2">
+                <span className="font-rubik font-medium text-black">
+                  Nearby Places
+                </span>
                 {property.nearbyPlaces &&
                   property.nearbyPlaces.map((place, k) => (
-                    <li key={k} className="font-inter text-xs leading-relaxed">
-                      {place}
-                    </li>
+                    <p
+                      key={k}
+                      className="break-words font-inter text-xs font-medium leading-normal"
+                    >
+                      • {place}
+                    </p>
                   ))}
               </div>
             </div>

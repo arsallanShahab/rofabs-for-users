@@ -122,7 +122,7 @@ export default function Home() {
     const newItems = await fetchLocation(value);
     setItems(newItems);
     setIsLoading(false);
-  }, 500); // 500ms delay
+  }, 600); // 600ms delay
 
   useEffect(() => {
     if (inputValue.length > 0) {
@@ -377,7 +377,19 @@ export default function Home() {
                       <Calendar
                         mode="single"
                         selected={checkOutDate}
-                        onSelect={setCheckOutDate}
+                        onSelect={(date: Date | undefined) => {
+                          if (date && checkInDate) {
+                            if (date > checkInDate) {
+                              setCheckOutDate(date);
+                            } else {
+                              toast.error(
+                                "Check-out date should be greater than check-in date",
+                              );
+                            }
+                          } else {
+                            toast.error("Please select check-in date");
+                          }
+                        }}
                         initialFocus
                       />
                     </PopoverContent>
@@ -433,7 +445,7 @@ export default function Home() {
               <div className="absolute -bottom-7 flex w-full items-center justify-center px-4 py-2">
                 <button
                   onClick={handleSubmit}
-                  className="rounded-[99px] bg-sky-500 px-10 py-3 text-xl font-semibold text-white shadow-[0_15px_30px_0px_rgba(0,0,0,0.2)] duration-100 hover:bg-zinc-700 active:translate-y-1 active:bg-zinc-950"
+                  className="rounded-[99px] bg-sky-500 px-10 py-3 text-xl font-semibold text-white shadow-[0_15px_30px_0px_rgba(0,0,0,0.2)] duration-100 hover:bg-sky-400 active:translate-y-1 active:scale-95 active:bg-sky-500"
                 >
                   Search
                 </button>

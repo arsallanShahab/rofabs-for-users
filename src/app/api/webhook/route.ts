@@ -37,6 +37,76 @@ export async function POST(request: Request) {
     }
     console.log(entity, "entity");
 
+    const rooms = await db
+      .collection("rooms")
+      .find({
+        propertyId: new ObjectId(entity.notes.propertyId),
+        roomCategory: entity.notes.roomCategory,
+        roomType: entity.notes.roomType,
+      })
+      .toArray();
+
+    const roomsWithVacany = rooms.filter((room) => room.vacancy > 0);
+    //5 room double
+    let nog = entity.notes.numberOfGuests;
+
+    for (const room of roomsWithVacany) {
+      if (nog > room.vacancy) {
+        nog = nog - room.vacancy;
+        await db.collection("rooms").updateOne(
+          {
+            _id: new ObjectId(room._id),
+          },
+          {
+            $set: {
+              vacancy: 0,
+            },
+          },
+        );
+      } else {
+        await db.collection("rooms").updateOne(
+          {
+            _id: new ObjectId(room._id),
+          },
+          {
+            $set: {
+              vacancy: room.vacancy - nog,
+            },
+          },
+        );
+        break;
+      }
+    }
+
+    console.log(roomsWithVacany, "roomsWithVacany");
+
+    for (const room of rooms) {
+      if (room.vacancy >= entity.notes.numberOfGuests) {
+        await db.collection("rooms").updateOne(
+          {
+            _id: new ObjectId(room._id),
+          },
+          {
+            $set: {
+              vacancy: room.vacancy - entity.notes.numberOfGuests,
+            },
+          },
+        );
+        break;
+      } else {
+        await db.collection("rooms").updateOne(
+          {
+            _id: new ObjectId(room._id),
+          },
+          {
+            $set: {
+              vacancy: 0,
+            },
+          },
+        );
+      }
+    }
+
     const booking = {
       user: new ObjectId(entity.notes.userId),
       propertyId: new ObjectId(entity.notes.propertyId),

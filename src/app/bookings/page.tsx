@@ -118,7 +118,7 @@ const Page: FC = () => {
       return;
     }
     if (!phoneNumber || !email || !firstName) {
-      toast("Please fill the guest details");
+      toast.error("Please fill the guest details");
       return;
     }
     if (firstName.length < 3) {
@@ -134,7 +134,7 @@ const Page: FC = () => {
       return;
     }
     setCreatingBooking(true);
-    const t = toast.loading("Creating order");
+    // const t = toast.loading("Creating order");
     const res = await fetch("/api/bookings/create", {
       method: "POST",
       headers: {
@@ -155,7 +155,7 @@ const Page: FC = () => {
         userId: "6573382dc4015b9e34414abe",
       }),
     });
-    toast.dismiss(t);
+    // toast.dismiss(t);
     toast.success("Order created");
     toast.success("pay to confirm booking");
     const data = await res.json();

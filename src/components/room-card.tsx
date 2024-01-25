@@ -1,5 +1,6 @@
 import { Room } from "@/app/search/types";
 import { PropertyTypeEnum } from "@/lib/consts";
+import { cn } from "@/lib/utils";
 import { AirVent, BedDouble, Home, User } from "lucide-react";
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -10,9 +11,10 @@ type Props = {
   roomType: string;
   roomCategory: string;
   data: Room[];
+  totalGuests?: number;
 };
 
-const RoomCard: FC<Props> = ({ roomType, roomCategory, data }) => {
+const RoomCard: FC<Props> = ({ roomType, roomCategory, data, totalGuests }) => {
   const totalOccupancy = data[0].maxOccupancy * data.length;
   // const totalVacancy = data[0].maxOccupancy * data.length - data[0].bookedBeds;
   const totalVacancy = data.reduce((acc, room) => acc + room.vacancy, 0);
@@ -58,23 +60,47 @@ const RoomCard: FC<Props> = ({ roomType, roomCategory, data }) => {
 
   const handleSelectRoom = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+
     if (!checkInDate || !checkOutDate) {
-      toast("Please select check-in and check-out dates.");
+      toast.error("Please select check-in and check-out dates.");
+      return;
+    }
+
+    if (totalGuests === undefined) {
+      toast("Please select number of guests.");
+      return;
+    }
+    if (totalGuests > totalVacancy) {
+      toast.error(
+        "Please select number of guests less than or equal to total vacancy.",
+      );
       return;
     }
     if (
       data[0].propertyType === PropertyTypeEnum[0] &&
       (!numberOfGuests || numberOfGuests == "0")
     ) {
-      toast("Please select number of guests.");
+      toast.error("Please select number of guests.");
       return;
     }
     router.push("/bookings" + "?" + createQueryString("room-id", data[0]._id));
   };
 
   return (
-    <div className="grid grid-cols-7 bg-white *:border-r *:p-5">
-      <div className="col-span-3">
+    <div
+      className={cn(
+        "relative grid grid-cols-7 rounded-2xl border bg-white *:p-5 last:border-r-transparent",
+        // totalVacancy === 0 && "cursor-not-allowed opacity-50",
+      )}
+    >
+      {totalVacancy === 0 && (
+        <div className="absolute left-0 top-0 flex h-full w-full items-center justify-center rounded-2xl bg-red-100 bg-opacity-50">
+          <h3 className="font-rubik text-xl font-semibold text-rose-600">
+            No Vacancy Available
+          </h3>
+        </div>
+      )}
+      <div className="col-span-7 border-b sm:col-span-3 sm:border-b-0 sm:border-r">
         <p className="mb-2.5 font-rubik text-base font-medium text-black">
           {roomType} {roomCategory} Room X {data.length} Rooms
         </p>
@@ -104,17 +130,19 @@ const RoomCard: FC<Props> = ({ roomType, roomCategory, data }) => {
           </div>
         </div>
       </div>
-      <div className="col-span-2 flex flex-col items-start justify-between gap-1.5 p-2.5 *:w-full">
+      <div className="col-span-7 flex flex-col items-start justify-between gap-1.5 border-b p-2.5 *:w-full sm:col-span-2 sm:border-b-0 sm:border-r">
         <div>
           <h3 className="mb-2 text-lg font-semibold">Facilties</h3>
-          {data[0].facilities.map((facility) => (
-            <li
-              key={facility}
-              className="text-sm font-medium capitalize text-zinc-600"
-            >
-              {facility}
-            </li>
-          ))}
+          <div className="flex flex-wrap items-start justify-start gap-2.5 sm:flex-col">
+            {data[0].facilities.map((facility) => (
+              <li
+                key={facility}
+                className="text-sm font-medium capitalize text-zinc-600"
+              >
+                {facility}
+              </li>
+            ))}
+          </div>
         </div>
         <div className="mt-2.5 flex flex-wrap gap-1.5 *:mb-0">
           <h3 className="font-inter text-xs text-zinc-400">
@@ -128,7 +156,7 @@ const RoomCard: FC<Props> = ({ roomType, roomCategory, data }) => {
           </h3>
         </div>
       </div>
-      <div className="col-span-2 flex flex-col justify-between *:w-full">
+      <div className="col-span-7 flex flex-col justify-between *:w-full sm:col-span-2">
         <div className="flex justify-between">
           <div className="flex flex-col items-start">
             <span className="text-sm font-medium text-zinc-600">
