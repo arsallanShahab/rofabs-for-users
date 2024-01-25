@@ -63,7 +63,6 @@ const Navbar: FC = (props: Props) => {
               {link.name}
             </Link>
           ))}
-          L
         </div>
         <div className="flex items-center justify-end">
           <Button variant={"outline"} className="rounded-lg">
