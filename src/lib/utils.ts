@@ -1,3 +1,4 @@
+import bcrypt from "bcryptjs";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -50,3 +51,16 @@ export function groupByProp<T>(
 
   return Object.values(groups);
 }
+
+//bcryptjs
+export const hashPassword = async (password: string) => {
+  const salt = await bcrypt.genSalt(10);
+  return await bcrypt.hash(password, salt);
+};
+
+export const comparePassword = async (
+  password: string,
+  hashedPassword: string,
+) => {
+  return await bcrypt.compare(password, hashedPassword);
+};

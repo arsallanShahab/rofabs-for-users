@@ -314,7 +314,7 @@ const Page: FC = (props: Props) => {
                 </span>
                 <Link
                   href={"#room-options"}
-                  className="mt-2.5 flex flex-1 items-center justify-center rounded-lg bg-amber-500 px-4 py-3 text-xl font-semibold text-white"
+                  className="mt-2.5 flex flex-1 items-center justify-center rounded-lg bg-amber-500 px-4 py-3 text-xl font-semibold text-white duration-100 hover:bg-orange-500 active:scale-95"
                 >
                   view {room?.length} rooms <ChevronsDown className="h-4 w-4" />
                 </Link>

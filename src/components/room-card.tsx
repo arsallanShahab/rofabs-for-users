@@ -6,6 +6,7 @@ import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { FC, useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { useGlobalContext } from "./context-provider";
 
 type Props = {
   roomType: string;
@@ -15,6 +16,7 @@ type Props = {
 };
 
 const RoomCard: FC<Props> = ({ roomType, roomCategory, data, totalGuests }) => {
+  const { user } = useGlobalContext();
   const totalOccupancy = data[0].maxOccupancy * data.length;
   // const totalVacancy = data[0].maxOccupancy * data.length - data[0].bookedBeds;
   const totalVacancy = data.reduce((acc, room) => acc + room.vacancy, 0);
@@ -60,6 +62,11 @@ const RoomCard: FC<Props> = ({ roomType, roomCategory, data, totalGuests }) => {
 
   const handleSelectRoom = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+
+    if (!user || !user.id) {
+      toast.error("Please login to continue.");
+      return;
+    }
 
     if (!checkInDate || !checkOutDate) {
       toast.error("Please select check-in and check-out dates.");

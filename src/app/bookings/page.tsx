@@ -1,4 +1,5 @@
 "use client";
+import { useGlobalContext } from "@/components/context-provider";
 import { PropertyTypeEnum } from "@/lib/consts";
 import { cn } from "@/lib/utils";
 import { Input } from "@nextui-org/react";
@@ -17,8 +18,8 @@ declare global {
 }
 
 const Page: FC = () => {
+  const { user } = useGlobalContext();
   const router = useRouter();
-  const pathname = usePathname();
   const searchParams = useSearchParams();
 
   const [creatingBooking, setCreatingBooking] = useState<boolean>(false);
@@ -113,6 +114,11 @@ const Page: FC = () => {
   };
   const handlePay = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+
+    if (!user || !user.id) {
+      toast.error("Please Login to continue");
+      return;
+    }
     if (!checkInDate || !checkOutDate) {
       toast.error("Please select check-in and check-out dates.");
       return;
@@ -152,7 +158,7 @@ const Page: FC = () => {
         propertyId: propertyId,
         roomId: roomId,
         amount,
-        userId: "6573382dc4015b9e34414abe",
+        userId: user.id,
       }),
     });
     // toast.dismiss(t);
@@ -169,9 +175,9 @@ const Page: FC = () => {
         toast.success("Payment Successful");
       },
       prefill: {
-        name: data.guestName,
-        email: data.guestEmail,
-        contact: data.guestPhoneNumber,
+        name: data.notes.guestName,
+        email: data.notes.guestEmail,
+        contact: data.notes.guestPhoneNumber,
       },
       notes: {
         guestName: data.notes.guestName,
