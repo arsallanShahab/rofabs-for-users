@@ -72,7 +72,7 @@ const RoomCard: FC<Props> = ({ roomType, roomCategory, data, totalGuests }) => {
     }
     if (totalGuests > totalVacancy) {
       toast.error(
-        "Please select number of guests less than or equal to total vacancy.",
+        "This room does not have enough vacancy for the selected number of guests.",
       );
       return;
     }
@@ -182,7 +182,7 @@ const RoomCard: FC<Props> = ({ roomType, roomCategory, data, totalGuests }) => {
           </span>
           <button
             onClick={handleSelectRoom}
-            className=" mt-2 w-full rounded-lg bg-rose-600 py-4 font-bold text-white"
+            className=" mt-2 w-full rounded-lg bg-rose-500 py-4 font-bold text-white hover:bg-rose-600 active:scale-95 active:bg-rose-500"
           >
             SELECT ROOM
           </button>

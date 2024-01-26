@@ -201,13 +201,13 @@ const Page: FC = () => {
   }
   return (
     <div className="relative min-h-screen w-full bg-blue-50">
-      <div className="relative z-10 mx-auto grid max-w-screen-xl grid-cols-6 gap-5 p-5 pb-16">
-        <div className="col-span-4 flex w-full flex-col gap-5 *:w-full">
-          <div className="rounded-xl bg-white">
+      <div className="relative z-10 mx-auto grid max-w-screen-xl grid-cols-6 gap-5 p-3 pb-16 sm:p-5">
+        <div className="col-span-6 flex w-full flex-col gap-5 *:w-full sm:col-span-4">
+          <div className="rounded-xl border bg-white">
             <div className="border-b px-7 py-5">
               <h3 className="font-rubik text-xl font-semibold">Hotel Info</h3>
             </div>
-            <div className="px-7 py-5">
+            <div className="px-5 py-5 sm:px-7">
               {property && (
                 <div className="flex justify-start gap-5">
                   <Image
@@ -239,7 +239,7 @@ const Page: FC = () => {
               )}
             </div>
             <div className="p-5 pt-0">
-              <div className="flex w-full items-center justify-start rounded-xl bg-blue-100 *:flex-1 *:flex-col *:items-start *:justify-center">
+              <div className="flex w-full flex-wrap items-center justify-start rounded-xl bg-blue-100 *:flex-1 *:flex-col *:items-start *:justify-center">
                 <div className="p-5">
                   <span className="font-rubik text-xs font-medium">
                     Check-In
@@ -281,7 +281,7 @@ const Page: FC = () => {
             <div className="p-5 pt-0">
               {room && (
                 <div className="rounded-xl bg-blue-100 p-5">
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-wrap items-center justify-between">
                     <div className="flex items-center justify-start gap-2">
                       <h3 className="font-rubik text-lg font-semibold">Room</h3>
                       <span className="font-rubik text-sm font-medium">
@@ -307,22 +307,23 @@ const Page: FC = () => {
               )}
             </div>
           </div>
-          <div className="rounded-xl bg-white">
+          <div className="rounded-xl border bg-white">
             <div className="border-b px-7 py-5">
               <h3 className="font-rubik text-xl font-semibold">
                 Guest Details
               </h3>
             </div>
-            <div className="grid grid-cols-2 gap-5 px-7 py-5">
+            <div className="grid grid-cols-1 gap-5 px-7 py-5 sm:grid-cols-2">
               <Input
                 label="First Name"
                 placeholder="Enter First Name"
                 labelPlacement="outside"
-                variant="bordered"
+                // variant="bordered"
                 classNames={{
-                  inputWrapper: "rounded-md",
+                  inputWrapper: "rounded-lg border shadow-none",
                   base: "font-rubik font-medium text-black text-sm",
                 }}
+                size="lg"
                 value={firstName}
                 onValueChange={setFirstName}
               />
@@ -330,11 +331,12 @@ const Page: FC = () => {
                 label="Last Name"
                 placeholder="Enter Last Name"
                 labelPlacement="outside"
-                variant="bordered"
+                // variant="bordered"
                 classNames={{
-                  inputWrapper: "rounded-md",
+                  inputWrapper: "rounded-lg border shadow-none",
                   base: "font-rubik font-medium text-black text-sm",
                 }}
+                size="lg"
                 value={lastName}
                 onValueChange={setLastName}
               />
@@ -344,11 +346,12 @@ const Page: FC = () => {
                 label="Email"
                 placeholder="Enter Email"
                 labelPlacement="outside"
-                variant="bordered"
+                // variant="bordered"
                 classNames={{
-                  inputWrapper: "rounded-md",
+                  inputWrapper: "rounded-lg border shadow-none",
                   base: "font-rubik font-medium text-black text-sm",
                 }}
+                size="lg"
                 value={email}
                 onValueChange={setEmail}
               />
@@ -360,11 +363,12 @@ const Page: FC = () => {
                 label="Phone Number"
                 placeholder="Enter Phone Number"
                 labelPlacement="outside"
-                variant="bordered"
+                // variant="bordered"
                 classNames={{
-                  inputWrapper: "rounded-md",
+                  inputWrapper: "rounded-lg border shadow-none",
                   base: "font-rubik font-medium text-black text-sm",
                 }}
+                size="lg"
                 value={phoneNumber}
                 onValueChange={setPhoneNumber}
               />
@@ -425,7 +429,7 @@ const Page: FC = () => {
             <button
               onClick={handlePay}
               className={cn(
-                "flex w-full items-center justify-center rounded-xl bg-orange-500 px-5 py-5 font-rubik text-lg font-medium text-white",
+                "flex w-full items-center justify-center rounded-xl bg-orange-500 px-5 py-5 font-rubik text-lg font-medium text-white duration-100 hover:bg-orange-600 active:scale-95 active:bg-orange-500",
                 creatingBooking && "cursor-not-allowed opacity-50",
               )}
             >
@@ -440,9 +444,9 @@ const Page: FC = () => {
             </span>
           </div>
         </div>
-        <div className="col-span-2">
+        <div className="col-span-6 sm:col-span-2">
           <div className="sticky top-24">
-            <div className="rounded-xl bg-white">
+            <div className="rounded-xl border bg-white">
               <div className="border-b px-7 py-5">
                 <h3 className="font-rubik text-xl font-semibold">
                   Price Summary

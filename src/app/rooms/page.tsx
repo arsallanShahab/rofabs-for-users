@@ -5,7 +5,7 @@ import RoomCard from "@/components/room-card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PropertyTypeEnum } from "@/lib/consts";
 import { groupByProp } from "@/lib/utils";
-import { Input } from "@nextui-org/react";
+import { Input, ScrollShadow } from "@nextui-org/react";
 import {
   BedDouble,
   ChevronsDown,
@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import React, { FC, useCallback, useEffect, useRef, useState } from "react";
+import React, { FC, useEffect, useRef, useState } from "react";
 import { Autoplay, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Property, Room } from "../search/types";
@@ -347,42 +347,42 @@ const Page: FC = (props: Props) => {
       </div>
       <div
         ref={tabBar}
-        className="sticky left-0 top-[80px] z-[89] w-full overflow-x-auto border-y bg-white text-black"
+        className="sticky left-0 top-[78px] z-[89] w-full overflow-x-auto border-y bg-white text-black shadow-lg"
       >
-        <div className="mx-auto flex max-w-screen-xl justify-start *:w-full">
-          <Link
-            href={"#room-options"}
-            className="break-keep font-medium *:px-5 *:py-6 *:font-rubik"
-          >
-            <button className="flex items-center gap-1.5">Room Options</button>
-          </Link>
-          <Link
-            href={"#amenities"}
-            className="font-medium *:px-5 *:py-6 *:font-rubik"
-          >
-            <button className="flex items-center gap-1.5">Amenities</button>
-          </Link>
-          <Link
-            href={"#guest-reviews"}
-            className="font-medium *:px-5 *:py-6 *:font-rubik"
-          >
-            <button className="flex items-center gap-1.5">Guest Reviews</button>
-          </Link>
-          <Link
-            href={"#property-policies"}
-            className="font-medium *:px-5 *:py-6 *:font-rubik"
-          >
-            <button className="flex items-center gap-1.5 font-medium">
+        <ScrollShadow orientation="horizontal" size={100}>
+          <div className="mx-auto flex w-full max-w-screen-xl justify-start *:break-keep">
+            <Link
+              href={"#room-options"}
+              className="whitespace-nowrap px-3 py-6 font-rubik text-xs font-medium sm:px-5 sm:text-base"
+            >
+              Room Options
+            </Link>
+            <Link
+              href={"#amenities"}
+              className="whitespace-nowrap px-3 py-6 font-rubik text-xs font-medium sm:px-5 sm:text-base"
+            >
+              Amenities
+            </Link>
+            <Link
+              href={"#guest-reviews"}
+              className="whitespace-nowrap px-3 py-6 font-rubik text-xs font-medium sm:px-5 sm:text-base"
+            >
+              Guest Reviews
+            </Link>
+            <Link
+              href={"#property-policies"}
+              className="whitespace-nowrap px-3 py-6 font-rubik text-xs font-medium sm:px-5 sm:text-base"
+            >
               Property Policies
-            </button>
-          </Link>
-          <Link
-            href={"#location"}
-            className="font-medium *:px-5 *:py-6 *:font-rubik"
-          >
-            <button className="flex items-center gap-1.5">Location</button>
-          </Link>
-        </div>
+            </Link>
+            <Link
+              href={"#location"}
+              className="whitespace-nowrap px-3 py-6 font-rubik text-xs font-medium sm:px-5 sm:text-base"
+            >
+              Location
+            </Link>
+          </div>
+        </ScrollShadow>
       </div>
       <div className="w-full bg-blue-50 pt-5" id="room-options">
         <div className="mx-auto flex max-w-screen-xl flex-col items-start justify-start gap-5 pb-20 *:w-full">

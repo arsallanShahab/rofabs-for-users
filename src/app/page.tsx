@@ -15,23 +15,18 @@ import { cn } from "@/lib/utils";
 import {
   Autocomplete,
   AutocompleteItem,
-  Input,
   Select,
   SelectItem,
   Selection,
 } from "@nextui-org/react";
-import { useAsyncList } from "@react-stately/data";
 import { differenceInDays, format } from "date-fns";
 import dayjs from "dayjs";
 import { debounce } from "lodash";
 import { CalendarIcon, SearchIcon } from "lucide-react";
 import Head from "next/head";
-import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Key, useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { Autoplay, Pagination } from "swiper/modules";
-import { Swiper, SwiperSlide } from "swiper/react";
 
 type AutocompleteData = {
   place_id: string;
@@ -60,7 +55,6 @@ const TabsConstants = Object.freeze({
 
 export default function Home() {
   const router = useRouter();
-  const pathname = usePathname();
   const searchParams = useSearchParams();
 
   const [checkInDate, setCheckInDate] = useState<Date>();
@@ -115,13 +109,22 @@ export default function Home() {
   const [inputValue, setInputValue] = useState("");
   const [items, setItems] = useState<AutocompleteData[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<boolean>(false);
 
   const fetchItems = debounce(async (value) => {
     setIsLoading(true);
+    setError(false);
     // Replace this with your actual fetch function
-    const newItems = await fetchLocation(value);
-    setItems(newItems);
-    setIsLoading(false);
+    try {
+      const newItems = await fetchLocation(value);
+      setItems(newItems);
+    } catch (error) {
+      console.log(error);
+      // toast.error("Something went wrong");
+      setError(true);
+    } finally {
+      setIsLoading(false);
+    }
   }, 600); // 600ms delay
 
   useEffect(() => {
@@ -134,6 +137,7 @@ export default function Home() {
   }, [inputValue]);
 
   const fetchLocation = async (input: string) => {
+    // throw new Error("Function not implemented.");
     let res = await fetch(`/api/maps/autocomplete?input=${input}`);
     let json = await res.json();
     return json;
@@ -156,42 +160,6 @@ export default function Home() {
               Ac euismod vel sit maecenas id pellentesque eu sed consectetur.
               Malesuada adipiscing sagittis vel nulla.
             </p>
-            {/* <Swiper
-              modules={[Pagination, Autoplay]}
-              autoplay={{ delay: 2000, disableOnInteraction: true }}
-              spaceBetween={50}
-              slidesPerView={1}
-              navigation
-              // pagination={{ clickable: true }}
-            >
-              <SwiperSlide>
-                <Image
-                  src="/bg-1.jpg"
-                  alt="bg-one"
-                  className="h-full w-full object-cover"
-                  width={1000}
-                  height={1000}
-                />
-              </SwiperSlide>
-              <SwiperSlide>
-                <Image
-                  src="/bg-2.jpg"
-                  alt="bg-two"
-                  className="h-full w-full object-cover"
-                  width={1000}
-                  height={1000}
-                />
-              </SwiperSlide>
-              <SwiperSlide>
-                <Image
-                  src="/bg-3.jpg"
-                  alt="bg-three"
-                  className="h-full w-full object-cover"
-                  width={1000}
-                  height={1000}
-                />
-              </SwiperSlide>
-            </Swiper> */}
           </div>
         </div>
         <div className="px-2.5 py-5 pb-10 sm:px-10 sm:pb-5">
@@ -241,6 +209,7 @@ export default function Home() {
                   selectedKey={`${location && location}`}
                   onSelectionChange={(key) => {
                     setLocation(key);
+                    setError(false);
                     if (key) {
                       setInputValue(key.toString().split("&&")[0]);
                     }
@@ -259,8 +228,11 @@ export default function Home() {
                       setInputValue("");
                       setLocation("");
                       setItems([]);
+                      setError(false);
                     },
                   }}
+                  isInvalid={false}
+                  errorMessage={error ? "Something went wrong" : ""}
                   inputProps={{
                     classNames: {
                       inputWrapper:
@@ -268,6 +240,7 @@ export default function Home() {
                       input: "py-3.5 text-black placeholder:text-zinc-500",
                       label: "font-medium text-lg -bottom-1.5",
                       base: "font-rubik",
+                      errorMessage: "font-medium",
                     },
                   }}
                 >
@@ -336,7 +309,7 @@ export default function Home() {
                         )}
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
+                    <PopoverContent className="z-[198] w-auto p-0">
                       <Calendar
                         mode="single"
                         selected={checkInDate}
@@ -373,7 +346,7 @@ export default function Home() {
                         )}
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
+                    <PopoverContent className="z-[198] w-auto p-0">
                       <Calendar
                         mode="single"
                         selected={checkOutDate}

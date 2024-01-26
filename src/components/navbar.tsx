@@ -42,7 +42,7 @@ const Navbar: FC = (props: Props) => {
   return (
     <div
       className={cn(
-        "sticky top-0 z-[99] mx-auto max-w-screen-2xl bg-white",
+        "sticky top-0 z-[99] mx-auto max-w-screen-2xl bg-white bg-opacity-60 backdrop-blur-lg",
         pathname === "/" && "relative",
       )}
     >
