@@ -182,7 +182,7 @@ const RoomCard: FC<Props> = ({ roomType, roomCategory, data, totalGuests }) => {
           </span>
           <button
             onClick={handleSelectRoom}
-            className=" mt-2 w-full rounded-lg bg-rose-500 py-4 font-bold text-white hover:bg-rose-600 active:scale-95 active:bg-rose-500"
+            className=" mt-2 w-full rounded-lg bg-rose-500 py-4 font-bold text-white duration-100 hover:bg-rose-600 active:scale-95 active:bg-rose-500"
           >
             SELECT ROOM
           </button>

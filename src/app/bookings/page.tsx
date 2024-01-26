@@ -204,10 +204,10 @@ const Page: FC = () => {
       <div className="relative z-10 mx-auto grid max-w-screen-xl grid-cols-6 gap-5 p-3 pb-16 sm:p-5">
         <div className="col-span-6 flex w-full flex-col gap-5 *:w-full sm:col-span-4">
           <div className="rounded-xl border bg-white">
-            <div className="border-b px-7 py-5">
+            <div className="border-b px-5 py-5 sm:px-7">
               <h3 className="font-rubik text-xl font-semibold">Hotel Info</h3>
             </div>
-            <div className="px-5 py-5 sm:px-7">
+            <div className="px-3 py-5 sm:px-5">
               {property && (
                 <div className="flex justify-start gap-5">
                   <Image
@@ -238,7 +238,7 @@ const Page: FC = () => {
                 </div>
               )}
             </div>
-            <div className="p-5 pt-0">
+            <div className="p-3 pt-0 sm:p-5 sm:pt-0">
               <div className="flex w-full flex-wrap items-center justify-start rounded-xl bg-blue-100 *:flex-1 *:flex-col *:items-start *:justify-center">
                 <div className="p-5">
                   <span className="font-rubik text-xs font-medium">
@@ -278,7 +278,7 @@ const Page: FC = () => {
                 )}
               </div>
             </div>
-            <div className="p-5 pt-0">
+            <div className="p-3 pt-0 sm:p-5 sm:pt-0">
               {room && (
                 <div className="rounded-xl bg-blue-100 p-5">
                   <div className="flex flex-wrap items-center justify-between">
@@ -308,12 +308,12 @@ const Page: FC = () => {
             </div>
           </div>
           <div className="rounded-xl border bg-white">
-            <div className="border-b px-7 py-5">
+            <div className="border-b px-5 py-5 sm:px-7">
               <h3 className="font-rubik text-xl font-semibold">
                 Guest Details
               </h3>
             </div>
-            <div className="grid grid-cols-1 gap-5 px-7 py-5 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-5 px-5 py-5 sm:grid-cols-2 sm:px-7">
               <Input
                 label="First Name"
                 placeholder="Enter First Name"
