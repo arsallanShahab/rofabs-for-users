@@ -119,7 +119,7 @@ export async function POST(request: Request) {
       roomType: entity.notes.roomType,
       from: new Date(entity.notes.from),
       to: new Date(entity.notes.to),
-      numberOfGuests: parseInt(entity.notes.numberOfGuests),
+      numberOfGuest: parseInt(entity.notes.numberOfGuests),
       paymentMethod: entity.method,
       paymentStatus: PaymentStatusEnum.PAID,
       paymentAmount: entity.amount / 100,

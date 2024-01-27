@@ -1,5 +1,6 @@
 "use client";
 
+import BottomBar from "@/components/bottom-bar";
 import Navbar from "@/components/navbar";
 import { Providers } from "@/components/providers";
 // import { Toaster } from "@/components/ui/sonner";
@@ -19,6 +20,7 @@ export default function RootLayout({
       <body>
         <Providers>
           <Navbar />
+          <BottomBar />
           {children}
         </Providers>
         <Toaster

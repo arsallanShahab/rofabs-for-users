@@ -115,7 +115,7 @@ const Page: FC = () => {
   const handlePay = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
-    if (!user || !user.id) {
+    if (!user || !user.uid) {
       toast.error("Please Login to continue");
       return;
     }
@@ -158,7 +158,7 @@ const Page: FC = () => {
         propertyId: propertyId,
         roomId: roomId,
         amount,
-        userId: user.id,
+        userId: user.uid,
       }),
     });
     // toast.dismiss(t);

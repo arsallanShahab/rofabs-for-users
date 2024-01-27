@@ -1,6 +1,7 @@
 "use client";
 
 import { PropertyTypeEnum } from "@/lib/consts";
+import { auth } from "@/lib/firebase";
 import { cn } from "@/lib/utils";
 import {
   Avatar,
@@ -12,20 +13,35 @@ import {
   Modal,
   ModalBody,
   ModalContent,
-  ModalFooter,
   ModalHeader,
   // Button,
   useDisclosure,
 } from "@nextui-org/react";
+import {
+  ConfirmationResult,
+  RecaptchaVerifier,
+  onAuthStateChanged,
+  signInWithPhoneNumber,
+  signOut,
+  updateProfile,
+} from "firebase/auth";
+import { doc } from "firebase/firestore";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { FC, useEffect } from "react";
 import toast from "react-hot-toast";
+import OTPInput from "react-otp-input";
 import { useGlobalContext } from "./context-provider";
 import { Button } from "./ui/button";
+declare global {
+  interface Window {
+    recaptchaVerifier: RecaptchaVerifier;
+    confirmationResult: ConfirmationResult;
+  }
+}
 
-type Props = {};
+auth.useDeviceLanguage();
 
 const links = [
   {
@@ -53,74 +69,113 @@ const links = [
     href: "/faqs",
   },
 ];
-
-const Navbar: FC = (props: Props) => {
+const Navbar: FC = () => {
   const { user, setUser } = useGlobalContext();
-
   const pathname = usePathname();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   const [isLoadingUser, setIsLoadingUser] = React.useState<boolean>(true);
-  // const [user, setUser] = React.useState<null | any>(null); // [TODO - 1] - Add user type
   const [loginType, setLoginType] = React.useState<"login" | "signup">("login");
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [firstName, setFirstName] = React.useState<string>("");
   const [lastName, setLastName] = React.useState<string>("");
-  const [email, setEmail] = React.useState<string>("");
-  const [password, setPassword] = React.useState<string>("");
-  const [confirmPassword, setConfirmPassword] = React.useState<string>("");
+  const [phoneNumber, setPhoneNumber] = React.useState<string>("");
+  const [otp, setOtp] = React.useState<string>("");
+  const [actionStep, setActionStep] = React.useState<number>(1);
+  const [confirmationResult, setConfirmationResult] =
+    React.useState<ConfirmationResult | null>();
 
-  const handleSignup = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleGetOtp = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    setIsLoading(true);
+    // setActionStep(2);
+    // return;
+    const recaptchaVerifier = new RecaptchaVerifier(
+      auth,
+      "recaptcha-container",
+      {
+        size: "invisible",
+        callback: (response: any) => {
+          // reCAPTCHA solved, allow signInWithPhoneNumber.
+          setActionStep(2);
+        },
+      },
+    );
+
     try {
-      setIsLoading(true);
-      const res = await fetch("/api/auth/signup", {
-        method: "POST",
-        body: JSON.stringify({
-          firstName,
-          lastName,
-          email,
-          password,
-          confirmPassword,
-        }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        toast.success(data.message);
-        setLoginType("login");
-      } else {
-        toast.error(data.message);
-      }
+      const confirmationResult = await signInWithPhoneNumber(
+        auth,
+        "+91" + phoneNumber,
+        recaptchaVerifier,
+      );
+      console.log(confirmationResult, "confirmationResult");
+      setConfirmationResult(confirmationResult);
+      toast.success("OTP sent successfully");
+      // if (otp) {
+      //   await confirmationResult.confirm(otp);
+      //   console.log("Successfully signed in with phone number.");
+      // } else {
+      //   console.log("Verification code not provided.");
+      // }
     } catch (error) {
-      const err = error as Error & { message: string; succes: boolean };
-      console.log(err);
-      toast.error(err.message);
+      const err = error as Error & { message: string };
+      toast.error("Error signing in with phone number: " + err.message);
     } finally {
       setIsLoading(false);
     }
   };
 
-  console.log(user, "user");
-  const handleLogin = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleVerifyOTP = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
       setIsLoading(true);
-      const res = await fetch("/api/auth/login", {
+      await confirmationResult?.confirm(otp).then((result) => {
+        console.log(result.user, "result user");
+      });
+      toast.success("OTP verified successfully");
+      if (loginType === "signup") {
+        setActionStep(3);
+      } else {
+        onOpenChange();
+      }
+    } catch (error) {
+      const err = error as Error & { message: string };
+      console.error("Error signing in with phone number: " + err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSignup = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    if (auth.currentUser === null) {
+      toast.error("User not found");
+      return;
+    }
+    try {
+      setIsLoading(true);
+      const res = updateProfile(auth.currentUser, {
+        displayName: firstName + " " + lastName,
+        photoURL: "https://picsum.photos/seed/NWbJM2B/640/480",
+        // email: email,
+      });
+      const addToMongoDB = await fetch("/api/auth/mongodb/add-user", {
         method: "POST",
         body: JSON.stringify({
-          email,
-          password,
+          id: auth.currentUser.uid,
+          name: firstName + " " + lastName,
+          phoneNumber: phoneNumber,
+          avatar: "https://picsum.photos/seed/NWbJM2B/640/480",
         }),
       });
-      const data = await res.json();
-      if (data.success) {
-        toast.success(data.message);
-        setUser(data?.data);
-        onOpenChange();
-      } else {
-        toast.error(data.message);
-      }
+      const mongodbData = await addToMongoDB.json();
+      console.log(mongodbData, "mongodbData");
+      const data = await res;
+      console.log(data, "data");
+      toast.success("Profile updated successfully");
+      onOpenChange();
     } catch (error) {
       const err = error as Error & { message: string; succes: boolean };
       console.log(err);
@@ -134,16 +189,7 @@ const Navbar: FC = (props: Props) => {
     e.preventDefault();
     try {
       setIsLoading(true);
-      const res = await fetch("/api/auth/logout", {
-        method: "POST",
-      });
-      const data = await res.json();
-      if (data.success) {
-        toast.success(data.message);
-        setUser(null);
-      } else {
-        toast.error(data.message);
-      }
+      const res = signOut(auth);
     } catch (error) {
       const err = error as Error & { message: string; succes: boolean };
       console.log(err);
@@ -157,9 +203,19 @@ const Navbar: FC = (props: Props) => {
     const getUser = async () => {
       setIsLoadingUser(true);
       try {
-        const res = await fetch("/api/auth/me");
-        const data = await res.json();
-        setUser(data?.data);
+        onAuthStateChanged(auth, (user) => {
+          if (user?.displayName && user?.phoneNumber && user?.photoURL) {
+            setUser({
+              displayName: user.displayName,
+              phoneNumber: user.phoneNumber,
+              photoUrl: user.photoURL,
+              uid: user.uid,
+            });
+            console.log(user, "user");
+          } else {
+            setUser(null);
+          }
+        });
       } catch (error) {
         console.log(error);
         setUser(null);
@@ -168,13 +224,14 @@ const Navbar: FC = (props: Props) => {
       }
     };
     getUser();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <>
       <div
         className={cn(
-          "sticky top-0 z-[99] mx-auto max-w-screen-2xl bg-white bg-opacity-60 backdrop-blur-lg",
+          "sticky top-0 z-[99] mx-auto hidden max-w-screen-2xl bg-white bg-opacity-60 backdrop-blur-lg sm:block",
           pathname === "/" && "relative",
         )}
       >
@@ -205,14 +262,16 @@ const Navbar: FC = (props: Props) => {
                       isBordered
                       as="button"
                       className="border-zinc-200 font-medium transition-transform"
-                      name={user?.name.toUpperCase()}
+                      name={user?.displayName?.toUpperCase()}
                       size="sm"
                       src={"https://picsum.photos/seed/NWbJM2B/640/480"}
                     />
                     <div className="flex flex-col items-start justify-center">
-                      <p className="text-xs font-semibold">{user?.name}</p>
+                      <p className="text-xs font-semibold">
+                        {user?.displayName}
+                      </p>
                       <p className="text-xs font-medium text-zinc-600">
-                        {user?.email}
+                        {user?.phoneNumber}
                       </p>
                     </div>
                   </div>
@@ -220,7 +279,7 @@ const Navbar: FC = (props: Props) => {
                 <DropdownMenu aria-label="Profile Actions" variant="flat">
                   <DropdownItem key="profile" className="h-14 gap-2">
                     <p className="font-semibold">Signed in as</p>
-                    <p className="font-semibold">{user?.email}</p>
+                    <p className="font-semibold">{user?.phoneNumber}</p>
                   </DropdownItem>
                   <DropdownItem key="profile_link">Profile</DropdownItem>
                   <DropdownItem key="bookings_link">Bookings</DropdownItem>
@@ -276,81 +335,92 @@ const Navbar: FC = (props: Props) => {
                 </span>
               </ModalHeader>
               <ModalBody>
+                <Input
+                  type="tel"
+                  label="Phone Number"
+                  placeholder="Enter your phone number"
+                  labelPlacement="outside"
+                  classNames={{
+                    inputWrapper: "rounded-lg border shadow-none",
+                    base: "font-rubik font-medium text-black text-sm col-span-2",
+                  }}
+                  value={phoneNumber}
+                  onValueChange={setPhoneNumber}
+                />
+                {actionStep === 1 && (
+                  <>
+                    <div id="recaptcha-container"></div>
+                  </>
+                )}
+                {actionStep === 2 && (
+                  <div className="relative col-span-2 flex w-full justify-center px-5 py-2.5">
+                    <OTPInput
+                      value={otp}
+                      placeholder="000000"
+                      // type="number"
+                      onChange={setOtp}
+                      numInputs={6}
+                      renderSeparator={<span>-</span>}
+                      renderInput={(props) => (
+                        <input
+                          {...props}
+                          style={{ width: "3rem", height: "3rem" }}
+                          className="rounded-md border p-4 text-center text-base"
+                        />
+                      )}
+                    />
+                  </div>
+                )}
+                {actionStep === 1 && (
+                  <button
+                    onClick={handleGetOtp}
+                    className="flex items-center justify-center gap-1.5 rounded-xl bg-rose-500 py-3.5 font-rubik font-bold text-white duration-100 hover:bg-rose-600 active:scale-95 active:bg-rose-500"
+                  >
+                    {isLoading && <Loader2 className="h-5 w-5 animate-spin" />}
+                    Send OTP
+                  </button>
+                )}
+                {actionStep === 2 && (
+                  <button
+                    onClick={handleVerifyOTP}
+                    className="flex items-center justify-center gap-1.5 rounded-xl bg-rose-500 py-3.5 font-rubik font-bold text-white duration-100 hover:bg-rose-600 active:scale-95 active:bg-rose-500"
+                  >
+                    {isLoading && <Loader2 className="h-5 w-5 animate-spin" />}
+                    Verify OTP
+                  </button>
+                )}
                 {loginType === "signup" && (
                   <div className="grid grid-cols-2 gap-2.5">
-                    <Input
-                      label="First Name"
-                      placeholder="Enter your first name"
-                      labelPlacement="outside"
-                      classNames={{
-                        inputWrapper: "rounded-lg border shadow-none",
-                        base: "font-rubik font-medium text-black text-sm",
-                      }}
-                      value={firstName}
-                      onValueChange={setFirstName}
-                    />
-                    <Input
-                      label="Last Name"
-                      placeholder="Enter your last name"
-                      labelPlacement="outside"
-                      classNames={{
-                        inputWrapper: "rounded-lg border shadow-none",
-                        base: "font-rubik font-medium text-black text-sm",
-                      }}
-                      value={lastName}
-                      onValueChange={setLastName}
-                    />
+                    <div className="col-span-2 grid gap-2.5"></div>
+                    {actionStep === 3 && (
+                      <>
+                        <Input
+                          label="First Name"
+                          placeholder="Enter your first name"
+                          labelPlacement="outside"
+                          classNames={{
+                            inputWrapper: "rounded-lg border shadow-none",
+                            base: "font-rubik font-medium text-black text-sm",
+                          }}
+                          value={firstName}
+                          onValueChange={setFirstName}
+                        />
+                        <Input
+                          label="Last Name"
+                          placeholder="Enter your last name"
+                          labelPlacement="outside"
+                          classNames={{
+                            inputWrapper: "rounded-lg border shadow-none",
+                            base: "font-rubik font-medium text-black text-sm",
+                          }}
+                          value={lastName}
+                          onValueChange={setLastName}
+                        />
+                      </>
+                    )}
                   </div>
                 )}
-                <Input
-                  type="email"
-                  label="Email"
-                  placeholder="Enter your email address"
-                  labelPlacement="outside"
-                  classNames={{
-                    inputWrapper: "rounded-lg border shadow-none",
-                    base: "font-rubik font-medium text-black text-sm",
-                  }}
-                  value={email}
-                  onValueChange={setEmail}
-                />
-                <Input
-                  type="password"
-                  label="password"
-                  placeholder="Enter your password"
-                  labelPlacement="outside"
-                  classNames={{
-                    inputWrapper: "rounded-lg border shadow-none",
-                    base: "font-rubik font-medium text-black text-sm",
-                  }}
-                  value={password}
-                  onValueChange={setPassword}
-                />
-                {loginType === "signup" && (
-                  <Input
-                    type="password"
-                    label="Confirm Password"
-                    placeholder="Enter your password again"
-                    labelPlacement="outside"
-                    classNames={{
-                      inputWrapper: "rounded-lg border shadow-none",
-                      base: "font-rubik font-medium text-black text-sm",
-                    }}
-                    value={confirmPassword}
-                    onValueChange={setConfirmPassword}
-                  />
-                )}
-                {loginType === "login" && (
-                  <div className="flex items-center justify-end py-2">
-                    <Link
-                      className="text-sm font-medium text-zinc-600"
-                      href="/forgot-password"
-                    >
-                      Forgot Password?
-                    </Link>
-                  </div>
-                )}
-                {loginType === "login" && (
+                {/* {loginType === "login" && (
                   <button
                     onClick={handleLogin}
                     className={cn(
@@ -361,8 +431,8 @@ const Navbar: FC = (props: Props) => {
                     {isLoading && <Loader2 className="h-5 w-5 animate-spin" />}
                     Login
                   </button>
-                )}
-                {loginType === "signup" && (
+                )} */}
+                {loginType === "signup" && actionStep === 3 && (
                   <button
                     onClick={handleSignup}
                     className={cn(
