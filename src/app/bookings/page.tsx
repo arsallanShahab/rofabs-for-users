@@ -23,8 +23,8 @@ const Page: FC = () => {
   const searchParams = useSearchParams();
 
   const [creatingBooking, setCreatingBooking] = useState<boolean>(false);
-  const [firstName, setFirstName] = useState<string>();
-  const [lastName, setLastName] = useState<string>();
+  const [firstName, setFirstName] = useState<string>("");
+  const [lastName, setLastName] = useState<string>("");
   const [email, setEmail] = useState<string>();
   const [phoneNumber, setPhoneNumber] = useState<string>();
   const [loading, setLoading] = useState<boolean>(false);
@@ -141,59 +141,71 @@ const Page: FC = () => {
     }
     setCreatingBooking(true);
     // const t = toast.loading("Creating order");
-    const res = await fetch("/api/bookings/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        roomType: room?.roomType,
-        roomCategory: room?.roomCategory,
-        from: new Date(checkInDate),
-        to: new Date(checkOutDate),
-        numberOfGuests: numberOfGuests,
-        guestName: firstName + " " + lastName || "",
-        guestEmail: email,
-        guestPhoneNumber: phoneNumber,
-        propertyId: propertyId,
-        roomId: roomId,
-        amount,
-        userId: user.uid,
-      }),
-    });
-    // toast.dismiss(t);
-    toast.success("Order created");
-    toast.success("pay to confirm booking");
-    const data = await res.json();
-    setCreatingBooking(false);
-    const razorpay = new window.Razorpay({
-      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID as string,
-      order_id: data.id,
-      amount: data.amount,
-      handler: (res: any) => {
-        console.log(res, "res");
-        toast.success("Payment Successful");
-      },
-      prefill: {
-        name: data.notes.guestName,
-        email: data.notes.guestEmail,
-        contact: data.notes.guestPhoneNumber,
-      },
-      notes: {
-        guestName: data.notes.guestName,
-        guestPhoneNumber: data.notes.guestPhoneNumber,
-        guestEmail: data.notes.guestEmail,
-        from: data.notes.from.toString(),
-        to: data.notes.to.toString(),
-        numberOfGuests: data.notes.numberOfGuests,
-        roomType: data.notes.roomType,
-        roomCategory: data.notes.roomCategory,
-        propertyId: data.notes.propertyId,
-        userId: data.notes.userId,
-        orderId: data.orderId,
-      },
-    });
-    razorpay.open();
+    try {
+      const res = await fetch("/api/bookings/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          roomType: room?.roomType,
+          roomCategory: room?.roomCategory,
+          from: new Date(checkInDate),
+          to: new Date(checkOutDate),
+          numberOfGuests: numberOfGuests,
+          guestName: firstName + " " + lastName,
+          guestEmail: email,
+          guestPhoneNumber: phoneNumber,
+          propertyId: propertyId,
+          roomId: roomId,
+          amount,
+          userId: user.uid,
+          userName: user.displayName,
+        }),
+      });
+
+      const data = await res.json();
+      if (!data.id) {
+        toast.error(data.error || "Failed to create order");
+        return;
+      }
+      toast.success("Order created");
+      toast.success("pay to confirm booking");
+      const razorpay = new window.Razorpay({
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID as string,
+        order_id: data.id,
+        amount: data.amount,
+        handler: (res: any) => {
+          console.log(res, "res");
+          toast.success("Payment Successful");
+          router.push("/my-bookings");
+        },
+        prefill: {
+          name: data.notes.guestName,
+          email: data.notes.guestEmail,
+          contact: data.notes.guestPhoneNumber,
+        },
+        notes: {
+          guestName: data.notes.guestName,
+          guestPhoneNumber: data.notes.guestPhoneNumber,
+          guestEmail: data.notes.guestEmail,
+          from: data.notes.from.toString(),
+          to: data.notes.to.toString(),
+          numberOfGuests: data.notes.numberOfGuests,
+          roomType: data.notes.roomType,
+          roomCategory: data.notes.roomCategory,
+          propertyId: data.notes.propertyId,
+          userId: data.notes.userId,
+          orderId: data.orderId,
+        },
+      });
+      razorpay.open();
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to create order");
+    } finally {
+      setCreatingBooking(false);
+    }
   };
   if (loading || !property || !room) {
     return (

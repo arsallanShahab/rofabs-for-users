@@ -12,10 +12,17 @@ type Props = {
   roomType: string;
   roomCategory: string;
   data: Room[];
+  isAvailable: boolean;
   totalGuests?: number;
 };
 
-const RoomCard: FC<Props> = ({ roomType, roomCategory, data, totalGuests }) => {
+const RoomCard: FC<Props> = ({
+  roomType,
+  roomCategory,
+  data,
+  totalGuests,
+  isAvailable,
+}) => {
   const { user } = useGlobalContext();
   const totalOccupancy = data[0].maxOccupancy * data.length;
   // const totalVacancy = data[0].maxOccupancy * data.length - data[0].bookedBeds;
@@ -100,7 +107,7 @@ const RoomCard: FC<Props> = ({ roomType, roomCategory, data, totalGuests }) => {
         // totalVacancy === 0 && "cursor-not-allowed opacity-50",
       )}
     >
-      {totalVacancy === 0 && (
+      {!isAvailable && (
         <div className="absolute left-0 top-0 flex h-full w-full items-center justify-center rounded-2xl bg-red-100 bg-opacity-50">
           <h3 className="font-rubik text-xl font-semibold text-rose-600">
             No Vacancy Available
@@ -109,7 +116,7 @@ const RoomCard: FC<Props> = ({ roomType, roomCategory, data, totalGuests }) => {
       )}
       <div className="col-span-7 border-b sm:col-span-3 sm:border-b-0 sm:border-r">
         <p className="mb-2.5 font-rubik text-base font-medium text-black">
-          {roomType} {roomCategory} Room X {data.length} Rooms
+          {roomType} {roomCategory} Room
         </p>
         <Image
           src={data[0].images.roomImage[0].url}
@@ -174,10 +181,10 @@ const RoomCard: FC<Props> = ({ roomType, roomCategory, data, totalGuests }) => {
             </span>
           </div>
           <div className="flex flex-col items-start">
-            <span className="text-sm font-medium text-zinc-600">
-              Total Vacancy
+            <span className="text-sm font-medium text-zinc-600">is Vacant</span>
+            <span className="text-lg font-semibold">
+              {isAvailable ? "Yes" : "No"}
             </span>
-            <span className="text-lg font-semibold">{totalVacancy} Beds</span>
           </div>
         </div>
         <div>

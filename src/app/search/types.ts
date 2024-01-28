@@ -74,4 +74,91 @@ export type OrderProps = {
   roomId: string;
   amount: number;
   userId: string;
+  userName: string;
 };
+
+export interface BookingProps {
+  _id?: string;
+  user?: UserProps;
+  propertyId: string;
+  bookingType: string;
+  bookingStatus: string;
+  paymentMethod: string;
+  primaryGuestName: string;
+  checkedIn?: {
+    additionalGuests: {
+      roomNumber: number;
+      guest: GuestDetailsProps;
+    }[];
+    primaryGuest: {
+      roomNumber: number;
+      guest: GuestDetailsProps;
+    };
+  };
+  guestName?: string;
+  guestPhoneNumber: number;
+  guestEmail?: string;
+  roomCategory: string;
+  roomType: string;
+  from: Date;
+  to: Date;
+  checkIn: object;
+  paymentStatus: string;
+  numberOfGuests: number;
+  paymentAmount: number;
+  roomAssigned?: string;
+  isCheckedIn?: boolean;
+  isCheckedOut?: boolean;
+  isCancelled?: boolean;
+}
+
+export interface UserProps {
+  role: "Admin" | "Owner" | "Manager" | "User";
+  name: string;
+  username?: string;
+  profilePicture?: string;
+  phoneNumber?: string;
+}
+
+export interface GuestDetailsProps {
+  name: string;
+  email: string;
+  phoneNumber: string;
+  dob?: Date;
+  checkOutDate?: Date;
+  idProofBackImage?: { label: string; url: string };
+  idProofFrontImage?: { label: string; url: string };
+}
+
+export interface PropertyProps {
+  _id?: string;
+  name: string;
+  type: string;
+  location: string;
+  address: string;
+  coOfLocation: { type: "Point"; coordinates: [number, number] };
+  nearbyPlaces?: string[];
+  images: { label: string; url: string }[];
+  manager?: {
+    name: string;
+    email: string;
+    phoneNumber: string;
+  };
+  permissions?: string[];
+  facilities?: string[];
+  isParkingSpaceAvailable?: boolean | "true" | "false" | string;
+  isCoupleFriendly?: boolean;
+  foodMenu?: FoodMenuProps[];
+}
+
+export interface FoodMenuProps {
+  day: string;
+  meals: MealData[];
+}
+
+export interface MealData {
+  name: string;
+  hasMealItems?: boolean;
+  vegMealItems: string[];
+  nonVegMealItems: string[];
+}

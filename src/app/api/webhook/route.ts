@@ -23,110 +23,20 @@ export async function POST(request: Request) {
         status: 200,
       });
     }
-
-    const { db } = await connectToDatabase();
     const entity = payment.payload.payment.entity;
-    const isOrderExists = await db
-      .collection("bookings")
-      .findOne({ invoiceId: entity.id });
+    const { db } = await connectToDatabase();
 
-    if (isOrderExists) {
-      return new Response("Order already exists", {
-        status: 200,
-      });
-    }
-    console.log(entity, "entity");
-
-    const rooms = await db
-      .collection("rooms")
-      .find({
-        propertyId: new ObjectId(entity.notes.propertyId),
-        roomCategory: entity.notes.roomCategory,
-        roomType: entity.notes.roomType,
-      })
-      .toArray();
-
-    const roomsWithVacany = rooms.filter((room) => room.vacancy > 0);
-    //5 room double
-    let nog = entity.notes.numberOfGuests;
-
-    for (const room of roomsWithVacany) {
-      if (nog > room.vacancy) {
-        nog = nog - room.vacancy;
-        await db.collection("rooms").updateOne(
-          {
-            _id: new ObjectId(room._id),
-          },
-          {
-            $set: {
-              vacancy: 0,
-            },
-          },
-        );
-      } else {
-        await db.collection("rooms").updateOne(
-          {
-            _id: new ObjectId(room._id),
-          },
-          {
-            $set: {
-              vacancy: room.vacancy - nog,
-            },
-          },
-        );
-        break;
-      }
-    }
-
-    console.log(roomsWithVacany, "roomsWithVacany");
-
-    for (const room of rooms) {
-      if (room.vacancy >= entity.notes.numberOfGuests) {
-        await db.collection("rooms").updateOne(
-          {
-            _id: new ObjectId(room._id),
-          },
-          {
-            $set: {
-              vacancy: room.vacancy - entity.notes.numberOfGuests,
-            },
-          },
-        );
-        break;
-      } else {
-        await db.collection("rooms").updateOne(
-          {
-            _id: new ObjectId(room._id),
-          },
-          {
-            $set: {
-              vacancy: 0,
-            },
-          },
-        );
-      }
-    }
-
-    const booking = {
-      user: new ObjectId(entity.notes.userId),
-      propertyId: new ObjectId(entity.notes.propertyId),
-      bookingType: BookingTypeEnum.ONLINE,
-      bookingStatus: BookingStatusEnum.CONFIRMED,
-      guestName: entity.notes.guestName,
-      guestPhoneNumber: parseInt(entity.notes.guestPhoneNumber),
-      guestEmail: entity.notes.guestEmail,
-      roomCategory: entity.notes.roomCategory,
-      roomType: entity.notes.roomType,
-      from: new Date(entity.notes.from),
-      to: new Date(entity.notes.to),
-      numberOfGuest: parseInt(entity.notes.numberOfGuests),
-      paymentMethod: entity.method,
-      paymentStatus: PaymentStatusEnum.PAID,
-      paymentAmount: entity.amount / 100,
-      invoiceId: entity.id,
-    };
-
-    await db.collection("bookings").insertOne(booking);
+    const res = await db.collection("bookings").updateOne(
+      {
+        orderId: entity.order_id,
+      },
+      {
+        $set: {
+          paymentStatus: PaymentStatusEnum.PAID,
+          bookingStatus: BookingStatusEnum.CONFIRMED,
+        },
+      },
+    );
 
     return new Response(
       JSON.stringify({

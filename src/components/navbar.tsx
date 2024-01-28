@@ -26,7 +26,7 @@ import {
   updateProfile,
 } from "firebase/auth";
 import { doc } from "firebase/firestore";
-import { Loader2 } from "lucide-react";
+import { Bell, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { FC, useEffect } from "react";
@@ -159,6 +159,7 @@ const Navbar: FC = () => {
       const res = updateProfile(auth.currentUser, {
         displayName: firstName + " " + lastName,
         photoURL: "https://picsum.photos/seed/NWbJM2B/640/480",
+
         // email: email,
       });
       const addToMongoDB = await fetch("/api/auth/mongodb/add-user", {
@@ -231,7 +232,7 @@ const Navbar: FC = () => {
     <>
       <div
         className={cn(
-          "sticky top-0 z-[99] mx-auto hidden max-w-screen-2xl bg-white bg-opacity-60 backdrop-blur-lg sm:block",
+          "sticky top-0 z-[99] mx-auto max-w-screen-2xl bg-white bg-opacity-60 backdrop-blur-lg sm:block",
           pathname === "/" && "relative",
         )}
       >
@@ -253,7 +254,10 @@ const Navbar: FC = () => {
               </Link>
             ))}
           </div>
-          <div className="flex items-center justify-end">
+          <div className="block rounded-lg bg-zinc-100 p-2 sm:hidden">
+            <Bell className="h-5 w-5" />
+          </div>
+          <div className="hidden items-center justify-end sm:flex">
             {user && user !== null ? (
               <Dropdown placement="bottom-end">
                 <DropdownTrigger>
@@ -281,8 +285,12 @@ const Navbar: FC = () => {
                     <p className="font-semibold">Signed in as</p>
                     <p className="font-semibold">{user?.phoneNumber}</p>
                   </DropdownItem>
-                  <DropdownItem key="profile_link">Profile</DropdownItem>
-                  <DropdownItem key="bookings_link">Bookings</DropdownItem>
+                  <DropdownItem key="profile_link">
+                    <Link href="/profile">Profile</Link>
+                  </DropdownItem>
+                  <DropdownItem key="bookings_link">
+                    <Link href="/my-bookings">Bookings</Link>
+                  </DropdownItem>
                   {/* <DropdownItem key="billing">Billing</DropdownItem> */}
                   <DropdownItem key="preferences">Preferences</DropdownItem>
                   <DropdownItem

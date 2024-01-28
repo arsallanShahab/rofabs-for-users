@@ -18,6 +18,7 @@ import {
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { FC, useEffect, useRef, useState } from "react";
+import toast from "react-hot-toast";
 import { Autoplay, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Property, Room } from "../search/types";
@@ -38,7 +39,7 @@ const Page: FC = (props: Props) => {
   const [checkInDate, setCheckInDate] = useState<string>();
   const [checkOutDate, setCheckOutDate] = useState<string>();
   const [property, setProperty] = useState<Property>();
-  const [room, setRoom] = useState<Room[]>();
+  // const [room, setRoom] = useState<Room[]>();
   const [groupedRooms, setGroupedRooms] = useState<any | undefined>();
 
   const createQueryString = (
@@ -90,12 +91,14 @@ const Page: FC = (props: Props) => {
     const fetchRoom = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`/api/rooms?property-id=${propertyId}`);
+        const res = await fetch(
+          `/api/rooms?property-id=${propertyId}&from=${checkInDate}&to=${checkOutDate}&no-of-guests=${numberOfGuests}`,
+        );
         const data = await res.json();
         setProperty(data.property);
-        const groupBy = groupByProp(data.rooms, ["roomType", "roomCategory"]);
-        setGroupedRooms(groupBy);
-        setRoom(data.rooms);
+        // const groupBy = groupByProp(data.rooms, ["roomType", "roomCategory"]);
+        setGroupedRooms(data.rooms);
+        // setRoom(data.rooms);
         router.push(
           pathname +
             "?" +
@@ -116,15 +119,9 @@ const Page: FC = (props: Props) => {
       fetchRoom();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [roomId, propertyId]);
+  }, [roomId, propertyId, checkInDate, checkOutDate, numberOfGuests]);
 
-  useEffect(() => {
-    if (tabBar.current) {
-      document.documentElement.style.scrollPaddingTop = `${tabBar.current.offsetHeight + 79}px`;
-    }
-  }, [loading]);
-
-  if (loading || !property || !room?.length) {
+  if (loading || !property) {
     return (
       <div className="mx-auto flex max-w-screen-xl flex-col items-start justify-start gap-5 *:w-full">
         <div className="grid w-full grid-cols-6 gap-5 bg-white p-5">
@@ -170,13 +167,27 @@ const Page: FC = (props: Props) => {
             }}
             value={checkInDate}
             onChange={(e) => {
-              router.push(
-                pathname +
-                  "?" +
-                  createQueryString({
-                    "check-in": e.target.value,
-                  }),
-              );
+              if (checkOutDate) {
+                if (new Date(e.target.value) > new Date(checkOutDate)) {
+                  toast.error("Check-in date cannot be after check-out date.");
+                  return;
+                }
+                router.push(
+                  pathname +
+                    "?" +
+                    createQueryString({
+                      "check-in": e.target.value,
+                    }),
+                );
+              } else {
+                router.push(
+                  pathname +
+                    "?" +
+                    createQueryString({
+                      "check-in": e.target.value,
+                    }),
+                );
+              }
             }}
           />
           <Input
@@ -192,13 +203,24 @@ const Page: FC = (props: Props) => {
             }}
             value={checkOutDate}
             onChange={(e) => {
-              router.push(
-                pathname +
-                  "?" +
-                  createQueryString({
-                    "check-out": e.target.value,
-                  }),
-              );
+              e.preventDefault();
+              if (checkInDate) {
+                if (new Date(checkInDate) > new Date(e.target.value)) {
+                  toast.error("Check-out date cannot be before check-in date.");
+                  return;
+                }
+                router.push(
+                  pathname +
+                    "?" +
+                    createQueryString({
+                      "check-out": e.target.value,
+                    }),
+                );
+              } else {
+                toast.error("Please select check-in date first.");
+                e.preventDefault();
+                return;
+              }
             }}
           />
           {property.type === PropertyTypeEnum[0] && (
@@ -291,8 +313,9 @@ const Page: FC = (props: Props) => {
                     <span className="font-rubik text-sm">price starts at</span>
                     <span className="font-sora text-2xl font-semibold">
                       ₹{" "}
-                      {room?.length &&
-                        (room[0]?.pricePerDay || room[0]?.pricePerMonth)}
+                      {groupedRooms[0].data?.length &&
+                        (groupedRooms[0].data[0]?.pricePerDay ||
+                          groupedRooms[0].data[0]?.pricePerMonth)}
                     </span>
                   </div>
                   <div className="flex flex-col justify-start gap-1.5 *:w-full">
@@ -301,22 +324,28 @@ const Page: FC = (props: Props) => {
                     </div>
                     <div className="flex items-center gap-1 font-rubik text-sm font-semibold">
                       <User className="mr-1 h-4 w-4" />{" "}
-                      {room &&
-                        (room[0].maxOccupancy > 1
-                          ? `${room[0].maxOccupancy} Guests`
-                          : `${room[0].maxOccupancy} Guest`)}
+                      {groupedRooms[0].data &&
+                        (groupedRooms[0].data[0].maxOccupancy > 1
+                          ? `${groupedRooms[0].data[0].maxOccupancy} Guests`
+                          : `${groupedRooms[0].data[0].maxOccupancy} Guest`)}
                     </div>
                   </div>
                 </div>
                 <span className="font-rubik text-sm font-semibold text-zinc-500">
                   1 pax per{" "}
-                  {room?.length && (room[0]?.pricePerDay ? "night" : "month")}
+                  {groupedRooms[0].data?.length &&
+                    (groupedRooms[0].data[0]?.pricePerDay ? "night" : "month")}
                 </span>
                 <Link
                   href={"#room-options"}
                   className="mt-2.5 flex flex-1 items-center justify-center rounded-lg bg-amber-500 px-4 py-3 text-xl font-semibold text-white duration-100 hover:bg-orange-500 active:scale-95"
                 >
-                  view {room?.length} rooms <ChevronsDown className="h-4 w-4" />
+                  view{" "}
+                  {groupedRooms.reduce(
+                    (acc: number, room: any) => acc + room.data.length,
+                    0,
+                  )}{" "}
+                  rooms <ChevronsDown className="h-4 w-4" />
                 </Link>
               </div>
             </div>
@@ -347,7 +376,7 @@ const Page: FC = (props: Props) => {
       </div>
       <div
         ref={tabBar}
-        className="sticky left-0 top-[78px] z-[89] w-full overflow-x-auto border-y bg-white text-black shadow-lg"
+        className="sticky left-0 top-[72px] z-[89] w-full overflow-x-auto border-y bg-white text-black shadow-lg"
       >
         <ScrollShadow orientation="horizontal" size={100}>
           <div className="mx-auto flex w-full max-w-screen-xl justify-start *:break-keep">
@@ -393,6 +422,7 @@ const Page: FC = (props: Props) => {
                 room: {
                   roomType: string;
                   roomCategory: string;
+                  isAvailable: boolean;
                   data: Room[];
                 },
                 k: number,
@@ -402,6 +432,7 @@ const Page: FC = (props: Props) => {
                     key={k}
                     roomType={room.roomType}
                     roomCategory={room.roomCategory}
+                    isAvailable={room.isAvailable}
                     data={room.data}
                     totalGuests={
                       numberOfGuests ? Number(numberOfGuests) : undefined

@@ -16,8 +16,8 @@ const BottomBar: FC = () => {
   return (
     <div
       ref={ref}
-      className="fixed inset-x-0 bottom-0 z-[99] flex bg-indigo-950
-  px-1.5 py-4 font-rubik shadow-[0_-0px_-6px_-1px_rgba(0,0,0,0.2),0_-2px_-4px_-2px_rgbs(0,0,0,0.1)] *:flex *:flex-1 *:flex-col *:items-center *:justify-center *:text-center *:font-medium *:text-white sm:hidden 
+      className="fixed inset-x-0 bottom-0 z-[99] flex bg-blue-950
+  px-1.5 py-2 font-rubik shadow-[0_-0px_-6px_-1px_rgba(0,0,0,0.2),0_-2px_-4px_-2px_rgbs(0,0,0,0.1)] *:flex *:flex-1 *:flex-col *:items-center *:justify-center *:text-center *:font-medium *:text-white sm:hidden 
   "
     >
       <Link
@@ -51,10 +51,9 @@ const BottomBar: FC = () => {
         className={cn("rounded-xl px-2 py-3 hover:bg-indigo-900")}
       >
         <BadgePercent
-          size={24}
           className={cn(
-            "h-6 w-6 duration-100",
-            pathname === "/offers" && "h-7 w-7 text-indigo-300",
+            "h-9 w-9 rounded-2xl bg-white p-1 text-indigo-950 duration-100",
+            pathname === "/offers" && "h-7 w-7",
           )}
         />
         offers

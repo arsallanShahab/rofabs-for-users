@@ -177,7 +177,7 @@ const Page = () => {
             </div>
           )}
           {user && (
-            <div className="grid gap-5 rounded-2xl bg-white p-4">
+            <div className="grid gap-5 rounded-2xl bg-white p-4 sm:grid-cols-3">
               {" "}
               <Input
                 label="Name"
@@ -199,12 +199,14 @@ const Page = () => {
                 }}
                 value={user?.phoneNumber || ""}
               />
-              <button
-                onClick={handleLogout}
-                className="flex items-center justify-center gap-1.5 rounded-xl bg-rose-500 py-2.5 font-rubik font-bold text-white duration-100 hover:bg-rose-600 active:scale-95 active:bg-rose-500"
-              >
-                Log Out
-              </button>
+              <div className="h-full w-full sm:col-span-3 sm:flex sm:justify-end">
+                <button
+                  onClick={handleLogout}
+                  className="flex w-full items-center justify-center gap-1.5 rounded-xl bg-rose-500 px-10 py-2.5 font-rubik font-bold text-white duration-100 hover:bg-rose-600 active:scale-95 active:bg-rose-500 sm:w-auto"
+                >
+                  Log Out
+                </button>
+              </div>
             </div>
           )}
         </div>
