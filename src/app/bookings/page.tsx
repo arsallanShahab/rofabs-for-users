@@ -178,7 +178,7 @@ const Page: FC = () => {
         handler: (res: any) => {
           console.log(res, "res");
           toast.success("Payment Successful");
-          router.push("/my-bookings");
+          router.push("/bookings/me");
         },
         prefill: {
           name: data.notes.guestName,

@@ -13,14 +13,14 @@ type Props = {
   roomCategory: string;
   data: Room[];
   isAvailable: boolean;
-  totalGuests?: number;
+  numberOfGuests?: number;
 };
 
 const RoomCard: FC<Props> = ({
   roomType,
   roomCategory,
   data,
-  totalGuests,
+  numberOfGuests: totalGuests,
   isAvailable,
 }) => {
   const { user } = useGlobalContext();
@@ -110,7 +110,9 @@ const RoomCard: FC<Props> = ({
       {!isAvailable && (
         <div className="absolute left-0 top-0 flex h-full w-full items-center justify-center rounded-2xl bg-red-100 bg-opacity-50">
           <h3 className="font-rubik text-xl font-semibold text-rose-600">
-            No Vacancy Available
+            {totalGuests && totalGuests > totalVacancy
+              ? "Cannot accommodate " + totalGuests + " guests"
+              : "Sold Out"}
           </h3>
         </div>
       )}
@@ -180,12 +182,12 @@ const RoomCard: FC<Props> = ({
               {data.length} Rooms ({data[0].maxOccupancy * data.length} Beds)
             </span>
           </div>
-          <div className="flex flex-col items-start">
+          {/* <div className="flex flex-col items-start">
             <span className="text-sm font-medium text-zinc-600">is Vacant</span>
             <span className="text-lg font-semibold">
               {isAvailable ? "Yes" : "No"}
             </span>
-          </div>
+          </div> */}
         </div>
         <div>
           <p className="font-rubik text-3xl font-semibold">

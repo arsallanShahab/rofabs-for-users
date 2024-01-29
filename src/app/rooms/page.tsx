@@ -434,7 +434,7 @@ const Page: FC = (props: Props) => {
                     roomCategory={room.roomCategory}
                     isAvailable={room.isAvailable}
                     data={room.data}
-                    totalGuests={
+                    numberOfGuests={
                       numberOfGuests ? Number(numberOfGuests) : undefined
                     }
                   />

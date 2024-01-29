@@ -28,7 +28,7 @@ import {
 import { doc } from "firebase/firestore";
 import { Bell, Loader2 } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import React, { FC, useEffect } from "react";
 import toast from "react-hot-toast";
 import OTPInput from "react-otp-input";
@@ -73,6 +73,7 @@ const Navbar: FC = () => {
   const { user, setUser } = useGlobalContext();
   const pathname = usePathname();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const router = useRouter();
 
   const [isLoadingUser, setIsLoadingUser] = React.useState<boolean>(true);
   const [loginType, setLoginType] = React.useState<"login" | "signup">("login");
@@ -285,14 +286,20 @@ const Navbar: FC = () => {
                     <p className="font-semibold">Signed in as</p>
                     <p className="font-semibold">{user?.phoneNumber}</p>
                   </DropdownItem>
-                  <DropdownItem key="profile_link">
-                    <Link href="/profile">Profile</Link>
+                  <DropdownItem
+                    key="profile_link"
+                    onClick={(e) => router.push("/profile")}
+                  >
+                    Profile
                   </DropdownItem>
-                  <DropdownItem key="bookings_link">
-                    <Link href="/my-bookings">Bookings</Link>
+                  <DropdownItem
+                    onClick={(e) => router.push("/bookings/me")}
+                    key="bookings_link"
+                  >
+                    Bookings
                   </DropdownItem>
                   {/* <DropdownItem key="billing">Billing</DropdownItem> */}
-                  <DropdownItem key="preferences">Preferences</DropdownItem>
+                  {/* <DropdownItem key="preferences">Preferences</DropdownItem> */}
                   <DropdownItem
                     onClick={handleLogout}
                     key="logout"

@@ -1,5 +1,6 @@
 "use client";
 import { useGlobalContext } from "@/components/context-provider";
+import Wrapper from "@/components/wrapper";
 import { auth } from "@/lib/firebase";
 import { cn } from "@/lib/utils";
 import {
@@ -157,7 +158,7 @@ const Page = () => {
 
   return (
     <>
-      <div className="min-h-screen bg-blue-50 p-5">
+      <Wrapper>
         <div className="grid h-full w-full grid-cols-1 items-start gap-5">
           {" "}
           <h3 className="font-rubik text-2xl font-medium text-black">
@@ -210,7 +211,7 @@ const Page = () => {
             </div>
           )}
         </div>
-      </div>
+      </Wrapper>
       <Modal
         classNames={{
           backdrop: "z-[899]",

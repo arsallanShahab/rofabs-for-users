@@ -68,3 +68,12 @@ export const UserRoles = Object.freeze({
   SUPERVISOR: "Supervisor",
   CHEF: "Chef",
 });
+
+export const ComplaintTypeEnum = [
+  "General",
+  "Electrical",
+  "Plumbing",
+  "Food",
+  "Guest",
+  "Staff",
+];
