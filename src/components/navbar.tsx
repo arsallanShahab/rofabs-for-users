@@ -70,12 +70,12 @@ const links = [
   },
 ];
 const Navbar: FC = () => {
-  const { user, setUser } = useGlobalContext();
+  const { user, setUser, isLoadingUser, setIsLoadingUser } = useGlobalContext();
   const pathname = usePathname();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const router = useRouter();
 
-  const [isLoadingUser, setIsLoadingUser] = React.useState<boolean>(true);
+  // const [isLoadingUser, setIsLoadingUser] = React.useState<boolean>(true);
   const [loginType, setLoginType] = React.useState<"login" | "signup">("login");
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
@@ -203,7 +203,6 @@ const Navbar: FC = () => {
 
   useEffect(() => {
     const getUser = async () => {
-      setIsLoadingUser(true);
       try {
         onAuthStateChanged(auth, (user) => {
           if (user?.displayName && user?.phoneNumber && user?.photoURL) {
@@ -214,14 +213,15 @@ const Navbar: FC = () => {
               uid: user.uid,
             });
             console.log(user, "user");
+            setIsLoadingUser(false);
           } else {
             setUser(null);
+            setIsLoadingUser(false);
           }
         });
       } catch (error) {
         console.log(error);
         setUser(null);
-      } finally {
         setIsLoadingUser(false);
       }
     };

@@ -31,10 +31,8 @@ declare global {
 }
 
 const Page = () => {
-  const { user } = useGlobalContext();
+  const { user, isLoadingUser } = useGlobalContext();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-
-  const [isLoadingUser, setIsLoadingUser] = React.useState<boolean>(true);
   const [loginType, setLoginType] = React.useState<"login" | "signup">("login");
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
@@ -155,6 +153,13 @@ const Page = () => {
       toast.error(err.message);
     }
   };
+
+  if (isLoadingUser)
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <Loader2 className="h-10 w-10 animate-spin" />
+      </div>
+    );
 
   return (
     <>
