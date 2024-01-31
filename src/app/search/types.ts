@@ -1,3 +1,5 @@
+import { ObjectId } from "mongodb";
+
 export type SearchResponse = {
   success?: boolean;
   message?: string;
@@ -79,7 +81,7 @@ export type OrderProps = {
 
 export interface BookingProps {
   _id?: string;
-  user?: UserProps;
+  user?: string;
   propertyId: string;
   bookingType: string;
   bookingStatus: string;
@@ -132,6 +134,7 @@ export interface GuestDetailsProps {
 
 export interface PropertyProps {
   _id?: string;
+  owner_user_id?: ObjectId;
   name: string;
   type: string;
   location: string;
@@ -161,4 +164,35 @@ export interface MealData {
   hasMealItems?: boolean;
   vegMealItems: string[];
   nonVegMealItems: string[];
+}
+
+export interface ComplaintProps {
+  _id?: ObjectId;
+  owner_user_id?: ObjectId;
+  propertyId: string;
+  bookingId?: string;
+  userId: string;
+  userName: string;
+  userPhoneNumber: number;
+  userEmailAddress?: string;
+  complaintType: string;
+  complaintDetails: string;
+  complaintStatus: string;
+  complaintRemarks?: string;
+  isResolved?: boolean;
+  createdAt?: Date;
+}
+
+export interface ReviewProps {
+  _id?: ObjectId;
+  propertyId: string;
+  bookingId?: string;
+  userId: string;
+  userName: string;
+  userPhoneNumber: number;
+  userEmailAddress?: string;
+  avatar?: string;
+  rating: number;
+  review: string;
+  createdAt?: Date;
 }
