@@ -46,6 +46,10 @@ const Page = () => {
 
   const handleGetOtp = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    if (phoneNumber.length !== 10) {
+      toast.error("Phone number must be 10 digits");
+      return;
+    }
     setIsLoading(true);
     // setActionStep(2);
     // return;
@@ -99,6 +103,16 @@ const Page = () => {
   const handleVerifyOTP = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setIsLoading(true);
+    if (!confirmationResult) {
+      toast.error("OTP not sent");
+      setIsLoading(false);
+      return;
+    }
+    if (otp.length !== 6) {
+      toast.error("OTP must be 6 digits");
+      setIsLoading(false);
+      return;
+    }
     try {
       setIsLoading(true);
       const res = await confirmationResult?.confirm(otp).then((result) => {

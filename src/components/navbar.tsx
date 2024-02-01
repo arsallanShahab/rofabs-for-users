@@ -89,6 +89,10 @@ const Navbar: FC = () => {
 
   const handleGetOtp = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    if (phoneNumber.length !== 10) {
+      toast.error("Phone number must be 10 digits");
+      return;
+    }
     setIsLoading(true);
     // setActionStep(2);
     // return;
@@ -120,7 +124,17 @@ const Navbar: FC = () => {
     } catch (error) {
       const err = error as Error & { message: string };
       console.log(err, "err");
-      toast.error("Error signing in with phone number: " + err.message);
+      toast.error(
+        err.message.includes("too many requests")
+          ? "Too many requests. Please try again later"
+          : err.message.includes("invalid phone number")
+            ? "Invalid phone number"
+            : err.message.includes(
+                  "The SMS quota for this project has been exceeded",
+                )
+              ? "SMS quota exceeded"
+              : err.message,
+      );
     } finally {
       setIsLoading(false);
     }
