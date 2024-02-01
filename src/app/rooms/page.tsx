@@ -306,49 +306,58 @@ const Page: FC = (props: Props) => {
             </Swiper>
           </div>
           <div className="col-span-6 flex flex-col gap-2.5 *:w-full *:rounded-lg sm:col-span-2">
-            <div className="flex-1 bg-amber-50 p-5">
-              <div className="flex h-full flex-col justify-stretch gap-1 *:w-full">
-                <div className="flex items-center justify-between">
-                  <div className="flex flex-col justify-start *:w-full">
-                    <span className="font-rubik text-sm">price starts at</span>
-                    <span className="font-sora text-2xl font-semibold">
-                      ₹{" "}
-                      {groupedRooms[0].data?.length &&
-                        (groupedRooms[0].data[0]?.pricePerDay ||
-                          groupedRooms[0].data[0]?.pricePerMonth)}
-                    </span>
-                  </div>
-                  <div className="flex flex-col justify-start gap-1.5 *:w-full">
-                    <div className="flex items-center gap-1 font-rubik text-sm font-semibold">
-                      <BedDouble className="mr-1 h-4 w-4" /> 1 X Room
-                    </div>
-                    <div className="flex items-center gap-1 font-rubik text-sm font-semibold">
-                      <User className="mr-1 h-4 w-4" />{" "}
-                      {groupedRooms[0].data &&
-                        (groupedRooms[0].data[0].maxOccupancy > 1
-                          ? `${groupedRooms[0].data[0].maxOccupancy} Guests`
-                          : `${groupedRooms[0].data[0].maxOccupancy} Guest`)}
-                    </div>
-                  </div>
-                </div>
-                <span className="font-rubik text-sm font-semibold text-zinc-500">
-                  1 pax per{" "}
-                  {groupedRooms[0].data?.length &&
-                    (groupedRooms[0].data[0]?.pricePerDay ? "night" : "month")}
-                </span>
-                <Link
-                  href={"#room-options"}
-                  className="mt-2.5 flex flex-1 items-center justify-center rounded-lg bg-amber-500 px-4 py-3 text-xl font-semibold text-white duration-100 hover:bg-orange-500 active:scale-95"
-                >
-                  view{" "}
-                  {groupedRooms.reduce(
-                    (acc: number, room: any) => acc + room.data.length,
-                    0,
-                  )}{" "}
-                  rooms <ChevronsDown className="h-4 w-4" />
-                </Link>
+            {groupedRooms?.length === 0 && (
+              <div className="flex-1 bg-rose-500 p-5 font-medium text-white">
+                This property is not available for the selected dates.
               </div>
-            </div>
+            )}
+            {groupedRooms && groupedRooms.data && (
+              <div className="flex-1 bg-amber-50 p-5">
+                <div className="flex h-full flex-col justify-stretch gap-1 *:w-full">
+                  <div className="flex items-center justify-between">
+                    <div className="flex flex-col justify-start *:w-full">
+                      <span className="font-rubik text-sm">
+                        price starts at
+                      </span>
+                      <span className="font-sora text-2xl font-semibold">
+                        ₹{" "}
+                        {groupedRooms[0]?.data[0]?.pricePerDay ||
+                          groupedRooms[0]?.data[0]?.pricePerMonth}
+                      </span>
+                    </div>
+                    <div className="flex flex-col justify-start gap-1.5 *:w-full">
+                      <div className="flex items-center gap-1 font-rubik text-sm font-semibold">
+                        <BedDouble className="mr-1 h-4 w-4" /> 1 X Room
+                      </div>
+                      <div className="flex items-center gap-1 font-rubik text-sm font-semibold">
+                        <User className="mr-1 h-4 w-4" />{" "}
+                        {groupedRooms[0]?.data[0].maxOccupancy > 1
+                          ? `${groupedRooms[0]?.data[0].maxOccupancy} Guests`
+                          : `${groupedRooms[0]?.data[0].maxOccupancy} Guest`}
+                      </div>
+                    </div>
+                  </div>
+                  <span className="font-rubik text-sm font-semibold text-zinc-500">
+                    1 pax per{" "}
+                    {groupedRooms[0]?.data?.length &&
+                      (groupedRooms[0]?.data[0]?.pricePerDay
+                        ? "night"
+                        : "month")}
+                  </span>
+                  <Link
+                    href={"#room-options"}
+                    className="mt-2.5 flex flex-1 items-center justify-center rounded-lg bg-amber-500 px-4 py-3 text-xl font-semibold text-white duration-100 hover:bg-orange-500 active:scale-95"
+                  >
+                    view{" "}
+                    {groupedRooms.reduce(
+                      (acc: number, room: any) => acc + room.data.length,
+                      0,
+                    )}{" "}
+                    rooms <ChevronsDown className="h-4 w-4" />
+                  </Link>
+                </div>
+              </div>
+            )}
             <div className="flex flex-1 flex-col gap-2 *:w-full *:flex-1">
               <div className="flex flex-col justify-center gap-1.5 rounded-xl border p-5">
                 <div className="flex items-center justify-start gap-1.5 text-xs text-emerald-400">

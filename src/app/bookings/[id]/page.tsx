@@ -75,13 +75,17 @@ const Page = () => {
     }
     if (!property?.owner_user_id)
       return toast.error("Property Owner Not Found");
+    if (!booking?._id) return toast.error("Booking Not Found");
+    if (!booking?.user) return toast.error("User Not Found");
+    if (property?._id === undefined) return toast.error("Property Not Found");
     setAddingComplaint(true);
     try {
       console.log(property?.owner_user_id);
       const body: ComplaintProps = {
         owner_user_id: property?.owner_user_id,
-        propertyId: property?._id as string,
-        bookingId: booking?._id as string,
+        propertyId: property?._id,
+        propertyName: property?.name as string,
+        bookingId: booking?._id,
         userId: booking?.user as string,
         userName: booking?.guestName as string,
         userPhoneNumber: booking?.guestPhoneNumber as number,
@@ -124,11 +128,17 @@ const Page = () => {
       toast.error("Please Enter Review");
       return;
     }
+    if (!property?._id) return toast.error("Property Not Found");
+    if (!property?.owner_user_id)
+      return toast.error("Property Owner Not Found");
+    if (!booking?._id) return toast.error("Booking Not Found");
     setAddingReview(true);
     try {
       const body: ReviewProps = {
-        propertyId: property?._id as string,
-        bookingId: booking?._id as string,
+        owner_user_id: property?.owner_user_id,
+        propertyId: property?._id,
+        propertyName: property?.name as string,
+        bookingId: booking?._id,
         userId: booking?.user as string,
         userName: booking?.guestName as string,
         userPhoneNumber: booking?.guestPhoneNumber as number,
@@ -160,7 +170,7 @@ const Page = () => {
     }
   };
 
-  if (loading)
+  if (loading) {
     return (
       <Wrapper>
         <div className="flex items-center justify-center py-10">
@@ -168,20 +178,25 @@ const Page = () => {
         </div>
       </Wrapper>
     );
+  }
 
   return (
     <Wrapper>
-      <h1 className="font-rubik text-2xl font-medium text-black">Booking</h1>
-      <div className="grid gap-5 rounded-xl bg-white p-3 sm:grid-cols-2 sm:gap-0 sm:p-5">
+      <h1 className="font-sora text-4xl font-bold">Booking</h1>
+      <div className="grid gap-5 rounded-2xl border bg-white shadow-sm sm:grid-cols-2 sm:gap-0">
         {property && (
-          <div className="flex flex-col items-start justify-center gap-5 *:w-full sm:border-r-2 sm:border-dashed sm:p-5 sm:pl-0 sm:pt-0">
+          <div className="flex flex-col items-start justify-center gap-5 p-3 *:w-full sm:border-r-2 sm:border-dashed">
             <Image
-              className="h-[240px] w-full rounded-xl"
+              className="h-full w-full rounded-xl"
               width={500}
               height={500}
               src={property?.images[0].url}
               alt={property.name}
             />
+          </div>
+        )}
+        {booking && room && (
+          <div className="flex flex-col items-start justify-start gap-5 p-3 *:w-full sm:p-5">
             <div className="flex flex-col items-start justify-center gap-1.5">
               <p className="font-rubik text-xs font-medium text-zinc-500">
                 {property?.type}
@@ -193,10 +208,6 @@ const Page = () => {
                 {property?.address}
               </p>
             </div>
-          </div>
-        )}
-        {booking && room && (
-          <div className="flex flex-col items-start justify-start gap-5 pr-0 pt-0 *:w-full sm:p-5">
             <div className="relative flex justify-between gap-2.5 *:flex-1">
               <div className="border-r-2 border-dashed pt-2">
                 <span className="font-rubik text-sm font-medium text-zinc-500">
@@ -238,14 +249,14 @@ const Page = () => {
                 </p>
               </div>
             </div>
-            <div className="flex flex-col items-start justify-start *:flex-1">
+            {/* <div className="flex flex-col items-start justify-start *:flex-1">
               <span className="font-rubik text-sm font-medium text-zinc-500">
                 Room Details
               </span>
               <p className="font-rubik text-base font-medium text-black sm:text-xl">
-                {room?.maxOccupancy % booking?.numberOfGuests} Bed
+                {room?.maxOccupancy % booking?.numberOfGuests || "1"} Bed
               </p>
-            </div>
+            </div> */}
 
             <div className="flex flex-col items-start justify-start *:flex-1">
               <span className="font-rubik text-sm font-medium text-zinc-500">
@@ -282,15 +293,13 @@ const Page = () => {
               placeholder="Select Complaint Type"
               selectedKeys={complaintType}
               onSelectionChange={setComplaintType}
-              radius="md"
-              size="lg"
-              //   variant="bordered"
+              variant="bordered"
               classNames={{
-                trigger: "px-4 h-auto shadow-none border-1 py-3.5 rounded-xl",
-                innerWrapper: "placeholder:text-zinc-500 text-zinc-500",
+                trigger: "px-4 h-auto shadow-none border-1 py-3.5 rounded-lg",
+                // innerWrapper: "placeholder:text-zinc-500 text-zinc-500",
                 value: "text-zinc-500",
                 base: "font-rubik",
-                label: "font-medium text-lg bottom-0",
+                label: "-bottom-0.5",
               }}
             >
               {ComplaintTypeEnum.map((complaintType) => (
@@ -305,24 +314,25 @@ const Page = () => {
               label="Complaint"
               labelPlacement="outside"
               placeholder="Enter Complaint"
-              radius="md"
-              size="lg"
               value={complaint}
               onValueChange={setComplaint}
+              variant="bordered"
               classNames={{
-                input: "px-4 h-auto shadow-none border-1 py-3.5 rounded-xl",
-                innerWrapper: "placeholder:text-zinc-500 text-zinc-500",
+                inputWrapper:
+                  "px-4 h-auto shadow-none border-1 py-3.5 rounded-lg",
+                // innerWrapper:
+                //   "placeholder:text-zinc-500 text-zinc-500 px-4 py-3.5",
                 base: "font-rubik",
-                label: "font-medium text-lg bottom-0",
+                // label: "font-medium text-lg bottom-0",
               }}
             />
             <div className="flex justify-end">
               <button
                 onClick={handleAddComplaint}
-                className="flex items-center justify-center gap-2.5 rounded-xl bg-indigo-950 px-5 py-2 font-rubik text-lg font-medium text-white"
+                className="flex items-center justify-center gap-2.5 rounded-lg bg-indigo-950 px-6 py-3 font-rubik text-sm text-white duration-100 hover:bg-indigo-900 active:scale-95"
               >
                 {addingComplaint && (
-                  <Loader2 className="h-5 w-5 animate-spin text-white" />
+                  <Loader2 className="h-4 w-4 animate-spin text-white" />
                 )}
                 add complaint
               </button>
@@ -334,10 +344,10 @@ const Page = () => {
       {booking?.isCheckedOut && (
         <>
           <h1 className="mt-5 font-rubik text-2xl font-medium text-black">
-            Review
+            Reviews
           </h1>
-          <div className="grid gap-2.5 rounded-xl bg-white p-5">
-            <h3 className="font-rubik text-xl font-medium text-black">
+          <div className="grid gap-2.5 rounded-xl border bg-white p-5 shadow-sm">
+            <h3 className="font-rubik text-sm font-medium text-black">
               Rate Your Experience
             </h3>
             <div className="flex gap-2.5">
@@ -354,7 +364,7 @@ const Page = () => {
                 />
               ))}
             </div>
-            <h3 className="font-rubik text-xl font-medium text-black">
+            <h3 className="font-rubik text-sm font-medium text-black">
               Write Your Review
             </h3>
             <Input
@@ -363,23 +373,22 @@ const Page = () => {
               // label="Review"
               labelPlacement="outside"
               placeholder="Enter Review"
-              //   variant="bordered"
+              variant="bordered"
               value={review}
               onValueChange={setReview}
               classNames={{
                 inputWrapper:
-                  "px-4 h-auto shadow-none border-1 py-3.5 rounded-xl placeholder:text-zinc-500 text-zinc-500",
+                  "px-4 h-auto shadow-none border-1 py-3.5 rounded-lg",
                 base: "font-rubik",
-                label: "font-medium text-lg",
               }}
             />
             <div className="flex justify-end">
               <button
                 onClick={handleAddReview}
-                className="flex items-center justify-center gap-2.5 rounded-xl bg-indigo-950 px-5 py-2 font-rubik text-lg font-medium text-white"
+                className="flex items-center justify-center gap-2.5 rounded-lg bg-indigo-950 px-6 py-3 font-rubik text-sm text-white duration-100 hover:bg-indigo-900 active:scale-95"
               >
                 {addingReview && (
-                  <Loader2 className="h-5 w-5 animate-spin text-white" />
+                  <Loader2 className="h-4 w-4 animate-spin text-white" />
                 )}
                 add review
               </button>

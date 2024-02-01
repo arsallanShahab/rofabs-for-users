@@ -80,7 +80,7 @@ export type OrderProps = {
 };
 
 export interface BookingProps {
-  _id?: string;
+  _id?: ObjectId;
   user?: string;
   propertyId: string;
   bookingType: string;
@@ -133,7 +133,7 @@ export interface GuestDetailsProps {
 }
 
 export interface PropertyProps {
-  _id?: string;
+  _id?: ObjectId;
   owner_user_id?: ObjectId;
   name: string;
   type: string;
@@ -168,9 +168,10 @@ export interface MealData {
 
 export interface ComplaintProps {
   _id?: ObjectId;
-  owner_user_id?: ObjectId;
-  propertyId: string;
-  bookingId?: string;
+  owner_user_id: ObjectId;
+  propertyId: ObjectId;
+  propertyName: string;
+  bookingId: ObjectId;
   userId: string;
   userName: string;
   userPhoneNumber: number;
@@ -185,8 +186,10 @@ export interface ComplaintProps {
 
 export interface ReviewProps {
   _id?: ObjectId;
-  propertyId: string;
-  bookingId?: string;
+  owner_user_id: ObjectId;
+  propertyId: ObjectId;
+  propertyName: string;
+  bookingId: ObjectId;
   userId: string;
   userName: string;
   userPhoneNumber: number;

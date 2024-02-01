@@ -149,55 +149,56 @@ export default function Home() {
         <title>Rofabs for users</title>
       </Head>
       <main
-        className={`relative grid w-full grid-cols-1 bg-gradient-to-br from-sky-400 to-blue-800 py-14 md:grid-cols-2`}
+        className={`relative grid w-full grid-cols-1 bg-gradient-to-br from-sky-400 to-blue-800 py-5 sm:py-20 md:grid-cols-2`}
       >
         <div className="relative hidden h-full w-full md:block">
-          <div className="relative flex h-full w-full flex-col items-start justify-center gap-5 p-10">
-            <h1 className="pr-5 font-rubik text-7xl font-semibold text-white">
+          <div className="relative flex h-full w-full flex-col items-end justify-start gap-5 p-10">
+            <h1 className="pr-5 text-right font-rubik text-6xl font-semibold text-white">
               Find the best hotels, resorts and more for your next stay.
             </h1>
-            <p className="max-w-xl text-2xl font-medium text-white">
-              Ac euismod vel sit maecenas id pellentesque eu sed consectetur.
-              Malesuada adipiscing sagittis vel nulla.
+            <p className="max-w-xl text-right text-2xl font-medium text-white">
+              We have the best hotels, resorts and more for your next stay. We
+              have the best hotels, resorts and more for your next stay.
             </p>
           </div>
         </div>
         <div className="px-2.5 py-5 pb-10 sm:px-10 sm:pb-5">
-          <div className="relative flex h-full w-full items-center justify-center">
-            <form className="relative grid w-full grid-cols-1 gap-y-2 rounded-3xl bg-white px-5 py-14 shadow-[0_4px_30px_3px_rgba(0,0,0,0.15)] sm:grid-cols-2 sm:gap-x-5 sm:px-7">
-              <div className="absolute -top-8 left-0 z-[99] flex w-full items-center justify-center">
-                <div className="flex w-full max-w-md justify-center rounded-2xl bg-white p-5 text-center font-rubik shadow-[0_4px_30px_-12px_rgba(0,0,0,0.15)] *:flex-1 sm:rounded-[99px]">
-                  <div
-                    onClick={() => setSelectedTab(TabsConstants.HOSTEL_PG)}
-                    className={cn(
-                      "cursor-pointer font-semibold text-zinc-500",
-                      selectedTab === TabsConstants.HOSTEL_PG &&
-                        "text-zinc-950",
-                    )}
-                  >
-                    Hotel/PG
-                  </div>
-                  <div
-                    onClick={() => setSelectedTab(TabsConstants.HOTEL)}
-                    className={cn(
-                      "cursor-pointer font-medium text-zinc-500",
-                      selectedTab === TabsConstants.HOTEL && "text-zinc-950",
-                    )}
-                  >
-                    Hostels
-                  </div>
-                  <div
-                    onClick={() => setSelectedTab(TabsConstants.APARTMENT)}
-                    className={cn(
-                      "cursor-pointer font-medium text-zinc-500",
-                      selectedTab === TabsConstants.APARTMENT &&
-                        "text-zinc-950",
-                    )}
-                  >
-                    Apartments
-                  </div>
+          <div className="relative flex h-full w-full max-w-xl flex-col items-start justify-center *:w-full sm:flex-row">
+            <div className="-top-8 left-0 z-[99] flex w-full items-center justify-center pb-2.5 sm:absolute sm:pb-0">
+              <div className="flex w-full max-w-md justify-center rounded-2xl bg-white p-5 text-center font-rubik shadow-[0_4px_30px_-12px_rgba(0,0,0,0.3)] *:flex-1 sm:rounded-[99px]">
+                <div
+                  onClick={() => setSelectedTab(TabsConstants.HOSTEL_PG)}
+                  className={cn(
+                    "cursor-pointer text-zinc-500",
+                    selectedTab === TabsConstants.HOSTEL_PG &&
+                      "font-medium text-zinc-950",
+                  )}
+                >
+                  Hotel/PG
+                </div>
+                <div
+                  onClick={() => setSelectedTab(TabsConstants.HOTEL)}
+                  className={cn(
+                    "cursor-pointer text-zinc-500",
+                    selectedTab === TabsConstants.HOTEL &&
+                      "font-medium text-zinc-950",
+                  )}
+                >
+                  Hostels
+                </div>
+                <div
+                  onClick={() => setSelectedTab(TabsConstants.APARTMENT)}
+                  className={cn(
+                    "cursor-pointer text-zinc-500",
+                    selectedTab === TabsConstants.APARTMENT &&
+                      "font-medium text-zinc-950",
+                  )}
+                >
+                  Apartments
                 </div>
               </div>
+            </div>
+            <form className="relative grid w-full grid-cols-1 gap-y-2 rounded-3xl bg-white px-5 pb-12 pt-7 shadow-[0_4px_30px_3px_rgba(0,0,0,0.15)] sm:grid-cols-2 sm:gap-x-5 sm:px-7 sm:py-14">
               <div className="relative col-span-1 grid w-full flex-1 grid-cols-1 items-center gap-2.5 sm:col-span-2 sm:flex">
                 <Autocomplete
                   inputValue={inputValue}
@@ -401,7 +402,7 @@ export default function Home() {
                         <div
                           onClick={() => setRoomCategory(category)}
                           className={cn(
-                            "flex-1 cursor-pointer rounded-xl bg-zinc-100 px-5 py-3 text-center duration-100",
+                            "flex-1 cursor-pointer rounded-xl border bg-zinc-100 px-5 py-3 text-center duration-100",
                             category === roomCategory &&
                               " bg-sky-500 text-white",
                           )}
@@ -418,9 +419,9 @@ export default function Home() {
               <div className="absolute -bottom-7 flex w-full items-center justify-center px-4 py-2">
                 <button
                   onClick={handleSubmit}
-                  className="rounded-[99px] bg-sky-500 px-10 py-3 text-xl font-semibold text-white shadow-[0_15px_30px_0px_rgba(0,0,0,0.2)] duration-100 hover:bg-sky-400 active:translate-y-1 active:scale-95 active:bg-sky-500"
+                  className="rounded-[99px] bg-sky-500 px-10 py-3 font-rubik text-xl font-medium text-white shadow-[0_15px_30px_0px_rgba(0,0,0,0.2)] duration-100 hover:bg-sky-400 active:translate-y-1 active:scale-95 active:bg-sky-500"
                 >
-                  Search
+                  Search your stay
                 </button>
               </div>
             </form>

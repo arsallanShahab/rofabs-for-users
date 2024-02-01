@@ -103,11 +103,6 @@ const Page = () => {
   const handleVerifyOTP = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setIsLoading(true);
-    if (!confirmationResult) {
-      toast.error("OTP not sent");
-      setIsLoading(false);
-      return;
-    }
     if (otp.length !== 6) {
       toast.error("OTP must be 6 digits");
       setIsLoading(false);
@@ -196,9 +191,11 @@ const Page = () => {
 
   if (isLoadingUser)
     return (
-      <div className="flex h-screen items-center justify-center">
-        <Loader2 className="h-10 w-10 animate-spin" />
-      </div>
+      <Wrapper>
+        <div className="flex items-center justify-center py-10">
+          <Loader2 className="h-10 w-10 animate-spin text-indigo-950" />
+        </div>
+      </Wrapper>
     );
 
   return (
@@ -223,7 +220,7 @@ const Page = () => {
             </div>
           )}
           {user && (
-            <div className="grid gap-5 rounded-2xl bg-white p-4 sm:grid-cols-3">
+            <div className="grid gap-5 rounded-2xl border bg-white p-4 shadow-sm sm:grid-cols-3">
               {" "}
               <Input
                 label="Name"

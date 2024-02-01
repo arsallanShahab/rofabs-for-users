@@ -7,8 +7,9 @@ export async function POST(req: Request) {
   console.log(payload, "payload");
   const complaint: ComplaintProps = {
     owner_user_id: new ObjectId(payload.owner_user_id),
-    propertyId: payload.propertyId,
-    bookingId: payload.bookingId,
+    propertyId: new ObjectId(payload.propertyId),
+    propertyName: payload.propertyName,
+    bookingId: new ObjectId(payload.bookingId),
     userId: payload.userId,
     userName: payload.userName,
     userPhoneNumber: payload.userPhoneNumber,
