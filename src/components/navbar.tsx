@@ -112,15 +112,14 @@ const Navbar: FC = () => {
       );
       console.log(confirmationResult, "confirmationResult");
       setConfirmationResult(confirmationResult);
-      toast.success("OTP sent successfully");
-      // if (otp) {
-      //   await confirmationResult.confirm(otp);
-      //   console.log("Successfully signed in with phone number.");
-      // } else {
-      //   console.log("Verification code not provided.");
-      // }
+      if (confirmationResult.verificationId) {
+        toast.success("OTP sent successfully");
+      } else {
+        console.log("Verification code not provided.");
+      }
     } catch (error) {
       const err = error as Error & { message: string };
+      console.log(err, "err");
       toast.error("Error signing in with phone number: " + err.message);
     } finally {
       setIsLoading(false);
@@ -130,20 +129,39 @@ const Navbar: FC = () => {
   const handleVerifyOTP = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setIsLoading(true);
+    if (!confirmationResult) {
+      toast.error("OTP not sent");
+      setIsLoading(false);
+      return;
+    }
+    if (otp.length !== 6) {
+      toast.error("OTP must be 6 digits");
+      setIsLoading(false);
+      return;
+    }
     try {
       setIsLoading(true);
-      await confirmationResult?.confirm(otp).then((result) => {
+      const res = await confirmationResult?.confirm(otp).then((result) => {
         console.log(result.user, "result user");
       });
+      console.log(res, "res");
       toast.success("OTP verified successfully");
       if (loginType === "signup") {
         setActionStep(3);
       } else {
+        setIsLoading(false);
+        setActionStep(1);
+        setOtp("");
+        setPhoneNumber("");
+        setFirstName("");
+        setLastName("");
+        setLoginType("login");
         onOpenChange();
       }
     } catch (error) {
       const err = error as Error & { message: string };
       console.error("Error signing in with phone number: " + err.message);
+      toast.error(err.message.includes("code") ? "Invalid OTP" : err.message);
     } finally {
       setIsLoading(false);
     }
@@ -335,6 +353,14 @@ const Navbar: FC = () => {
         backdrop="blur"
         isOpen={isOpen}
         onOpenChange={onOpenChange}
+        onClose={() => {
+          setActionStep(1);
+          setOtp("");
+          setPhoneNumber("");
+          setFirstName("");
+          setLastName("");
+          setLoginType("login");
+        }}
       >
         <ModalContent>
           {(onClose) => (

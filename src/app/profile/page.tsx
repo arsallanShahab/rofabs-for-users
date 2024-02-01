@@ -67,9 +67,11 @@ const Page = () => {
         "+91" + phoneNumber,
         recaptchaVerifier,
       );
-      console.log(confirmationResult, "confirmationResult");
-      setConfirmationResult(confirmationResult);
-      toast.success("OTP sent successfully");
+      if (confirmationResult.verificationId) {
+        toast.success("OTP sent successfully");
+      } else {
+        console.log("Verification code not provided.");
+      }
       // if (otp) {
       //   await confirmationResult.confirm(otp);
       //   console.log("Successfully signed in with phone number.");
@@ -78,7 +80,17 @@ const Page = () => {
       // }
     } catch (error) {
       const err = error as Error & { message: string };
-      toast.error("Error signing in with phone number: " + err.message);
+      toast.error(
+        err.message.includes("too many requests")
+          ? "Too many requests. Please try again later"
+          : err.message.includes("invalid phone number")
+            ? "Invalid phone number"
+            : err.message.includes(
+                  "The SMS quota for this project has been exceeded",
+                )
+              ? "SMS quota exceeded"
+              : err.message,
+      );
     } finally {
       setIsLoading(false);
     }
@@ -89,18 +101,26 @@ const Page = () => {
     setIsLoading(true);
     try {
       setIsLoading(true);
-      await confirmationResult?.confirm(otp).then((result) => {
+      const res = await confirmationResult?.confirm(otp).then((result) => {
         console.log(result.user, "result user");
       });
       toast.success("OTP verified successfully");
       if (loginType === "signup") {
         setActionStep(3);
       } else {
+        setIsLoading(false);
+        setActionStep(1);
+        setOtp("");
+        setPhoneNumber("");
+        setFirstName("");
+        setLastName("");
+        setLoginType("login");
         onOpenChange();
       }
     } catch (error) {
       const err = error as Error & { message: string };
       console.error("Error signing in with phone number: " + err.message);
+      toast.error(err.message.includes("code") ? "Invalid OTP" : err.message);
     } finally {
       setIsLoading(false);
     }
