@@ -71,7 +71,7 @@ const Page = () => {
         "+91" + phoneNumber,
         recaptchaVerifier,
       );
-      setConfirmationResult(confirmationResult);
+      setConfirmationResult(cR);
       if (cR.verificationId) {
         toast.success("OTP sent successfully");
       } else {
