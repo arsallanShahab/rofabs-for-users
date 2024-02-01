@@ -417,6 +417,7 @@ const Navbar: FC = () => {
                   <div className="relative col-span-2 flex w-full justify-center px-5 py-2.5">
                     <OTPInput
                       value={otp}
+                      inputType="number"
                       placeholder="000000"
                       // type="number"
                       onChange={setOtp}

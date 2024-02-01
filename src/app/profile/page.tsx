@@ -304,6 +304,7 @@ const Page = () => {
                 {actionStep === 2 && (
                   <div className="relative col-span-2 flex w-full justify-center px-5 py-2.5">
                     <OTPInput
+                      inputType="number"
                       value={otp}
                       placeholder="000000"
                       // type="number"
