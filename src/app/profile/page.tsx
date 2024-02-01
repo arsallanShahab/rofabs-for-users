@@ -66,12 +66,13 @@ const Page = () => {
     );
 
     try {
-      const confirmationResult = await signInWithPhoneNumber(
+      const cR = await signInWithPhoneNumber(
         auth,
         "+91" + phoneNumber,
         recaptchaVerifier,
       );
-      if (confirmationResult.verificationId) {
+      setConfirmationResult(confirmationResult);
+      if (cR.verificationId) {
         toast.success("OTP sent successfully");
       } else {
         console.log("Verification code not provided.");
@@ -102,12 +103,18 @@ const Page = () => {
 
   const handleVerifyOTP = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    if (!confirmationResult) {
+      toast.error("OTP not sent");
+      setIsLoading(false);
+      return;
+    }
     setIsLoading(true);
     if (otp.length !== 6) {
       toast.error("OTP must be 6 digits");
       setIsLoading(false);
       return;
     }
+
     try {
       setIsLoading(true);
       const res = await confirmationResult?.confirm(otp).then((result) => {
