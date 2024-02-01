@@ -157,6 +157,12 @@ const Navbar: FC = () => {
       setIsLoading(true);
       const res = await confirmationResult?.confirm(otp).then((result) => {
         console.log(result.user, "result user");
+        setUser({
+          displayName: result.user?.displayName as string,
+          phoneNumber: result.user?.phoneNumber as string,
+          photoUrl: result.user?.photoURL as string,
+          uid: result.user?.uid,
+        });
       });
       console.log(res, "res");
       toast.success("OTP verified successfully");

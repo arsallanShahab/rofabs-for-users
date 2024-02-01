@@ -31,7 +31,7 @@ declare global {
 }
 
 const Page = () => {
-  const { user, isLoadingUser } = useGlobalContext();
+  const { user, isLoadingUser, setUser } = useGlobalContext();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [loginType, setLoginType] = React.useState<"login" | "signup">("login");
 
@@ -117,6 +117,12 @@ const Page = () => {
       setIsLoading(true);
       const res = await confirmationResult?.confirm(otp).then((result) => {
         console.log(result.user, "result user");
+        setUser({
+          displayName: result.user?.displayName as string,
+          phoneNumber: result.user?.phoneNumber as string,
+          photoUrl: result.user?.photoURL as string,
+          uid: result.user?.uid,
+        });
       });
       toast.success("OTP verified successfully");
       if (loginType === "signup") {
