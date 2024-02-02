@@ -14,9 +14,6 @@ const BottomBar: FC = () => {
       document.body.style.paddingBottom = `${current.clientHeight}px`;
       console.log(ref.current?.clientHeight);
     }
-    return () => {
-      document.body.style.paddingBottom = "";
-    };
   }, [ref]);
   return (
     <div
