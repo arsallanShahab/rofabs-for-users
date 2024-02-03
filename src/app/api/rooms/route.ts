@@ -102,11 +102,52 @@ export async function GET(request: Request) {
       message: "Property not found",
     });
   }
+  const reviews = await db
+    .collection("reviews")
+    .find({ propertyId: filter.propertyId })
+    .toArray();
+
+  let totalRating = 0;
+  const ratings = [0, 0, 0, 0, 0]; // Array to store ratings count for each star
+
+  for (const review of reviews) {
+    totalRating += review.rating;
+
+    if (review.rating >= 1 && review.rating <= 5) {
+      ratings[review.rating - 1]++; // Increment count for corresponding rating
+    }
+  }
+
+  const averageRating = Number((totalRating / reviews.length).toFixed(1));
+  const maxRating = ratings.reduce(
+    (max, count, rating) => {
+      if (count > max.count) {
+        return { rating: rating + 1, count };
+      }
+      return max;
+    },
+    { rating: 0, count: 0 },
+  );
+
+  console.log(
+    `The rating with the maximum number of occurrences is ${maxRating.rating} with a count of ${maxRating.count}.`,
+  );
 
   const group = await getRooms(filter);
   await updateRoomAvailability(group, filter);
 
-  return Response.json({ property, rooms: group, location: data });
+  return Response.json({
+    property,
+    rooms: group,
+    location: data,
+    reviews: {
+      total: reviews.length,
+      avgRating: averageRating,
+      maxRating,
+      ratings,
+      data: reviews,
+    },
+  });
 }
 
 // const rooms = await db

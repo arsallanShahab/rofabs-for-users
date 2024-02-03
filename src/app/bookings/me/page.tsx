@@ -313,60 +313,62 @@ const Page = () => {
                       </p>
                     </div>
                   )}
-                  {myPastBookings?.map((data) => {
-                    return (
-                      <Link
-                        href={"/bookings/" + data.booking._id}
-                        key={data.booking._id?.toString()}
-                        className="flex items-center justify-between gap-2.5 rounded-2xl border bg-white p-3 shadow-sm"
-                      >
-                        <div className="flex items-start justify-start gap-2.5">
-                          <div className="rounded-2xl bg-orange-100 p-2">
-                            <Hotel className="h-8 w-8 rounded-xl" />
-                          </div>
-                          <div className="flex flex-col items-start justify-center gap-1">
-                            <p className="text-lg font-bold text-black">
-                              {data.property.name}
-                            </p>
-                            <p className="max-w-sm text-sm text-gray-500">
-                              {data.property.address}
-                            </p>
-                            <div className="flex flex-wrap gap-1.5">
-                              {" "}
-                              <p className="flex items-center justify-center rounded-lg bg-zinc-100 px-3 py-1.5 font-rubik text-xs font-medium text-gray-600">
-                                <User2 className="inline-block h-4 w-4" />{" "}
-                                {data.booking.guestName}
+                  <div className="grid grid-cols-2 gap-5">
+                    {myPastBookings?.map((data) => {
+                      return (
+                        <Link
+                          href={"/bookings/" + data.booking._id}
+                          key={data.booking._id?.toString()}
+                          className="flex items-center justify-between gap-2.5 rounded-2xl border bg-white p-3 shadow-sm"
+                        >
+                          <div className="flex items-start justify-start gap-2.5">
+                            <div className="rounded-2xl bg-orange-100 p-2">
+                              <Hotel className="h-8 w-8 rounded-xl" />
+                            </div>
+                            <div className="flex flex-col items-start justify-center gap-1">
+                              <p className="text-lg font-bold text-black">
+                                {data.property.name}
                               </p>
-                              <div className="flex items-center justify-center rounded-lg bg-zinc-100 px-3 py-1.5 font-rubik text-xs font-medium text-gray-600">
-                                <BedDouble className="inline-block h-4 w-4" />
-                                {data.booking.roomType.toLowerCase() ===
-                                "single"
-                                  ? "Single Room"
-                                  : data.booking.roomType.toLowerCase() ===
-                                      "double"
-                                    ? "Double Room"
-                                    : data.booking.roomType.toLowerCase() ===
-                                        "triple"
-                                      ? "Triple Room"
-                                      : "Dormitory"}
-                              </div>
-                              <div className="flex items-center justify-center rounded-lg bg-zinc-100 px-3 py-1.5 font-rubik text-xs font-medium text-black">
-                                <p className="text-xs text-gray-600">
-                                  {dayjs(data.booking.from).format(
-                                    "MMM DD, YYYY",
-                                  )}{" "}
-                                  -{" "}
-                                  {dayjs(data.booking.to).format(
-                                    "MMM DD, YYYY",
-                                  )}
+                              <p className="max-w-sm text-sm text-gray-500">
+                                {data.property.address}
+                              </p>
+                              <div className="flex flex-wrap gap-1.5">
+                                {" "}
+                                <p className="flex items-center justify-center rounded-lg bg-zinc-100 px-3 py-1.5 font-rubik text-xs font-medium text-gray-600">
+                                  <User2 className="inline-block h-4 w-4" />{" "}
+                                  {data.booking.guestName}
                                 </p>
+                                <div className="flex items-center justify-center rounded-lg bg-zinc-100 px-3 py-1.5 font-rubik text-xs font-medium text-gray-600">
+                                  <BedDouble className="inline-block h-4 w-4" />
+                                  {data.booking.roomType.toLowerCase() ===
+                                  "single"
+                                    ? "Single Room"
+                                    : data.booking.roomType.toLowerCase() ===
+                                        "double"
+                                      ? "Double Room"
+                                      : data.booking.roomType.toLowerCase() ===
+                                          "triple"
+                                        ? "Triple Room"
+                                        : "Dormitory"}
+                                </div>
+                                <div className="flex items-center justify-center rounded-lg bg-zinc-100 px-3 py-1.5 font-rubik text-xs font-medium text-black">
+                                  <p className="text-xs text-gray-600">
+                                    {dayjs(data.booking.from).format(
+                                      "MMM DD, YYYY",
+                                    )}{" "}
+                                    -{" "}
+                                    {dayjs(data.booking.to).format(
+                                      "MMM DD, YYYY",
+                                    )}
+                                  </p>
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      </Link>
-                    );
-                  })}
+                        </Link>
+                      );
+                    })}
+                  </div>
                 </Tab>
               </Tabs>
             </div>

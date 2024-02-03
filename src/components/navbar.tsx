@@ -48,21 +48,29 @@ const links = [
     name: "Home",
     href: "/",
   },
+  // {
+  //   name: "Hostel & PG's",
+  //   href: "/search?property-type=" + PropertyTypeEnum[0].replace("/", "-"),
+  // },
+  // {
+  //   name: "Hotel",
+  //   href: "/search?property-type=" + PropertyTypeEnum[1],
+  // },
+  // {
+  //   name: "Homestays",
+  //   href: "/search?property-type=" + PropertyTypeEnum[2].replace(" ", "+"),
+  // },
   {
-    name: "Hostel & PG's",
-    href: "/search?property-type=" + PropertyTypeEnum[0].replace("/", "-"),
-  },
-  {
-    name: "Hotel",
-    href: "/search?property-type=" + PropertyTypeEnum[1],
-  },
-  {
-    name: "Homestays",
-    href: "/search?property-type=" + PropertyTypeEnum[2].replace(" ", "+"),
+    name: "Cities",
+    href: "/cities",
   },
   {
     name: "About",
     href: "/about",
+  },
+  {
+    name: "Contact Us",
+    href: "/contact",
   },
   {
     name: "FAQ's",

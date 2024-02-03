@@ -77,3 +77,15 @@ export const ComplaintTypeEnum = [
   "Guest",
   "Staff",
 ];
+
+export const DaysEnum = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
+
+export const MealNameEnum = ["Breakfast", "Lunch", "Snack", "Dinner"];
