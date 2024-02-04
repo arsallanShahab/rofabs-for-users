@@ -5,10 +5,12 @@ type Props = {
 };
 
 type User = {
-  uid: string;
-  displayName: string;
+  id: string;
   phoneNumber: string;
-  photoUrl: string;
+  name: string;
+  email: string;
+  profilePicture: string;
+  role: string;
 };
 
 const GlobalContext = createContext<{

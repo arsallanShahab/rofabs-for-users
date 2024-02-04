@@ -1,3 +1,4 @@
+import { PaymentStatusEnum } from "@/lib/consts";
 import { connectToDatabase } from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 
@@ -10,7 +11,7 @@ export async function GET(
     const { db } = await connectToDatabase();
     const userBookings = await db
       .collection("bookings")
-      .find({ user: id })
+      .find({ user: new ObjectId(id), paymentStatus: PaymentStatusEnum.PAID })
       .toArray();
     const data = [];
     for (const booking of userBookings) {

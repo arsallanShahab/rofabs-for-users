@@ -1,37 +1,43 @@
 import { UserRoles } from "@/lib/consts";
 import { connectToDatabase } from "@/lib/mongodb";
-import { hashPassword } from "@/lib/utils";
 import { faker } from "@faker-js/faker";
 
 export async function POST(req: Request, res: Response) {
-  const { firstName, lastName, email, password } = await req.json();
+  const { phoneNumber, firstName, lastName, email } = await req.json();
   try {
     const { db } = await connectToDatabase();
-    const isExists = await db.collection("users").findOne({ email });
-    if (isExists) {
-      return Response.json({
-        message: "User already exists",
-        success: false,
-      });
-    }
-    const hashedPassword = await hashPassword(password);
-    const username = email.split("@")[0];
+    const isExists = await db.collection("users").findOne({ phoneNumber });
+    // if (isExists) {
+    //   return Response.json({
+    //     message: "User already exists",
+    //     success: false,
+    //   });
+    // }
+    // const hashedPassword = await hashPassword(password);
+    // const username = email.split("@")[0];
+    const username = firstName.toLowerCase() + lastName.toLowerCase();
     const avatar = faker.image.urlPicsumPhotos({
       width: 100,
       height: 100,
     });
-    const user = await db.collection("users").insertOne({
-      username,
-      name: `${firstName} ${lastName || ""}`,
-      email,
-      avatar,
-      password: hashedPassword,
-      role: UserRoles.USER,
-      createdAt: new Date(),
-    });
+    const user = await db.collection("users").updateOne(
+      { phoneNumber },
+      {
+        $set: {
+          name: `${firstName}${lastName.length > 0 ? " " + lastName : ""}`,
+          email,
+          username,
+          profilePicture: avatar,
+          role: UserRoles.USER,
+          createdAt: new Date(),
+        },
+      },
+      { upsert: true },
+    );
     return Response.json({
-      message: "User created successfully",
+      message: "User updated successfully",
       success: true,
+      user,
     });
   } catch (error) {
     const err = error as Error & { message: string; success: boolean };

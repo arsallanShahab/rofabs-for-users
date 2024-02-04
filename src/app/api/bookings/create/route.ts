@@ -71,7 +71,7 @@ export async function POST(request: Request) {
     },
   });
   const booking = {
-    user: payload.userId,
+    user: new ObjectId(payload.userId),
     propertyId: new ObjectId(payload.propertyId),
     bookingType: BookingTypeEnum.ONLINE,
     bookingStatus: BookingStatusEnum.NOT_CONFIRMED,

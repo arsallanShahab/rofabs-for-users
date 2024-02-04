@@ -99,6 +99,19 @@ const Page: FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roomId, propertyId]);
 
+  useEffect(() => {
+    if (user?.name) {
+      setFirstName(user.name.split(" ")[0]);
+      setLastName(user.name.split(" ")[1]);
+    }
+    if (user?.email) {
+      setEmail(user.email);
+    }
+    if (user?.phoneNumber) {
+      setPhoneNumber(user.phoneNumber);
+    }
+  }, [user]);
+
   const createQueryString = (
     paramsToUpdate: Record<string, string>,
     paramToRemove?: string,
@@ -115,18 +128,19 @@ const Page: FC = () => {
   const handlePay = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
-    if (!user || !user.uid) {
+    if (!user || !user.id) {
       toast.error("Please Login to continue");
-      return;
-    }
-    if (!checkInDate || !checkOutDate) {
-      toast.error("Please select check-in and check-out dates.");
       return;
     }
     if (!phoneNumber || !email || !firstName) {
       toast.error("Please fill the guest details");
       return;
     }
+    if (!checkInDate || !checkOutDate) {
+      toast.error("Please select check-in and check-out dates.");
+      return;
+    }
+
     if (firstName.length < 3) {
       toast.error("Please enter a valid first name");
       return;
@@ -159,8 +173,8 @@ const Page: FC = () => {
           propertyId: propertyId,
           roomId: roomId,
           amount,
-          userId: user.uid,
-          userName: user.displayName,
+          userId: user.id,
+          userName: user.name,
         }),
       });
 

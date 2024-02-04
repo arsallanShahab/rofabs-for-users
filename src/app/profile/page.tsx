@@ -1,201 +1,66 @@
 "use client";
 import { useGlobalContext } from "@/components/context-provider";
 import Wrapper from "@/components/wrapper";
-import { auth } from "@/lib/firebase";
-import { cn } from "@/lib/utils";
-import {
-  Input,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalHeader,
-  useDisclosure,
-} from "@nextui-org/react";
-import {
-  ConfirmationResult,
-  RecaptchaVerifier,
-  signInWithPhoneNumber,
-  signOut,
-  updateProfile,
-} from "firebase/auth";
-import { ChevronLast, ChevronLeft, Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import React from "react";
-import toast from "react-hot-toast";
-import OTPInput from "react-otp-input";
+import { Input, useDisclosure } from "@nextui-org/react";
 
-declare global {
-  interface Window {
-    recaptchaVerifier: RecaptchaVerifier;
-    confirmationResult: ConfirmationResult;
-  }
-}
+import { ChevronLeft, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import React, { useEffect } from "react";
+import toast from "react-hot-toast";
 
 const Page = () => {
   const { user, isLoadingUser, setUser } = useGlobalContext();
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [loginType, setLoginType] = React.useState<"login" | "signup">("login");
-
-  const [isLoading, setIsLoading] = React.useState<boolean>(false);
-  const [firstName, setFirstName] = React.useState<string>("");
-  const [lastName, setLastName] = React.useState<string>("");
+  const [edit, setEdit] = React.useState<boolean>(false);
+  const [name, setName] = React.useState<string>("");
+  const [email, setEmail] = React.useState<string>("");
   const [phoneNumber, setPhoneNumber] = React.useState<string>("");
-  const [otp, setOtp] = React.useState<string>("");
-  const [actionStep, setActionStep] = React.useState<number>(1);
-  const [confirmationResult, setConfirmationResult] =
-    React.useState<ConfirmationResult | null>();
-
   const router = useRouter();
 
-  const handleGetOtp = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    if (phoneNumber.length !== 10) {
-      toast.error("Phone number must be 10 digits");
-      return;
+  useEffect(() => {
+    if (user?.name && user?.email && user?.phoneNumber) {
+      setName(user.name);
+      setEmail(user.email);
+      setPhoneNumber(user.phoneNumber);
     }
-    setIsLoading(true);
-    // setActionStep(2);
-    // return;
-    const recaptchaVerifier = new RecaptchaVerifier(
-      auth,
-      "recaptcha-container",
-      {
-        size: "invisible",
-        callback: (response: any) => {
-          // reCAPTCHA solved, allow signInWithPhoneNumber.
-          setActionStep(2);
-        },
-      },
-    );
+  }, [user]);
 
+  const handleLogout = async () => {
     try {
-      const cR = await signInWithPhoneNumber(
-        auth,
-        "+91" + phoneNumber,
-        recaptchaVerifier,
-      );
-      setConfirmationResult(cR);
-      if (cR.verificationId) {
-        toast.success("OTP sent successfully");
-      } else {
-        console.log("Verification code not provided.");
-      }
-      // if (otp) {
-      //   await confirmationResult.confirm(otp);
-      //   console.log("Successfully signed in with phone number.");
-      // } else {
-      //   console.log("Verification code not provided.");
-      // }
-    } catch (error) {
-      const err = error as Error & { message: string };
-      toast.error(
-        err.message.includes("too many requests")
-          ? "Too many requests. Please try again later"
-          : err.message.includes("invalid phone number")
-            ? "Invalid phone number"
-            : err.message.includes(
-                  "The SMS quota for this project has been exceeded",
-                )
-              ? "SMS quota exceeded"
-              : err.message,
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleVerifyOTP = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    if (!confirmationResult) {
-      toast.error("OTP not sent");
-      setIsLoading(false);
-      return;
-    }
-    setIsLoading(true);
-    if (otp.length !== 6) {
-      toast.error("OTP must be 6 digits");
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      setIsLoading(true);
-      const res = await confirmationResult?.confirm(otp).then((result) => {
-        console.log(result.user, "result user");
-        setUser({
-          displayName: result.user?.displayName as string,
-          phoneNumber: result.user?.phoneNumber as string,
-          photoUrl: result.user?.photoURL as string,
-          uid: result.user?.uid,
-        });
-      });
-      toast.success("OTP verified successfully");
-      if (loginType === "signup") {
-        setActionStep(3);
-      } else {
-        setIsLoading(false);
-        setActionStep(1);
-        setOtp("");
-        setPhoneNumber("");
-        setFirstName("");
-        setLastName("");
-        setLoginType("login");
-        onOpenChange();
-      }
-    } catch (error) {
-      const err = error as Error & { message: string };
-      console.error("Error signing in with phone number: " + err.message);
-      toast.error(err.message.includes("code") ? "Invalid OTP" : err.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleSignup = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    if (auth.currentUser === null) {
-      toast.error("User not found");
-      return;
-    }
-    try {
-      setIsLoading(true);
-      const res = updateProfile(auth.currentUser, {
-        displayName: firstName + " " + lastName,
-        photoURL: "https://picsum.photos/seed/NWbJM2B/640/480",
-        // email: email,
-      });
-      const addToMongoDB = await fetch("/api/auth/mongodb/add-user", {
+      await fetch("/api/auth/logout", {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      setUser(null);
+      router.push("/");
+    } catch (error) {
+      toast.error("An error occurred. Please try again later");
+    }
+  };
+
+  const handleUpdateProfile = async () => {
+    try {
+      const response = await fetch("/api/auth/user/update", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
-          id: auth.currentUser.uid,
-          name: firstName + " " + lastName,
-          phoneNumber: phoneNumber,
-          avatar: "https://picsum.photos/seed/NWbJM2B/640/480",
+          name,
+          email,
+          phoneNumber,
         }),
       });
-      const mongodbData = await addToMongoDB.json();
-      console.log(mongodbData, "mongodbData");
-      const data = await res;
-      console.log(data, "data");
-      toast.success("Profile updated successfully");
-      onOpenChange();
+      const data = await response.json();
+      if (response.ok) {
+        setEdit(false);
+        toast.success("Profile updated successfully");
+      } else {
+        toast.error(data.message);
+      }
     } catch (error) {
-      const err = error as Error & { message: string; succes: boolean };
-      console.log(err);
-      toast.error(err.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleLogout = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    try {
-      const res = signOut(auth);
-    } catch (error) {
-      const err = error as Error & { message: string; succes: boolean };
-      console.log(err);
-      toast.error(err.message);
+      toast.error("An error occurred. Please try again later");
     }
   };
 
@@ -211,7 +76,7 @@ const Page = () => {
   return (
     <>
       <Wrapper>
-        <div className="flex items-center justify-start">
+        <div className="flex items-center justify-between">
           <h3
             onClick={() => router.back()}
             className="flex cursor-pointer items-center justify-start gap-1 rounded-xl p-2.5 pr-4 font-rubik text-4xl font-medium text-black duration-100 hover:bg-zinc-100 active:-translate-x-2 active:scale-95 active:bg-zinc-50"
@@ -219,6 +84,12 @@ const Page = () => {
             <ChevronLeft size={24} className="h-8 w-8 stroke-[3px]" />
             Profile
           </h3>
+          <button
+            onClick={handleLogout}
+            className="flex items-center justify-center gap-1.5 rounded-lg bg-rose-500 px-7 py-2.5 font-rubik text-sm text-white duration-100 hover:bg-rose-600 active:scale-95 active:bg-rose-500"
+          >
+            Log Out
+          </button>
         </div>
         <div className="grid h-full w-full grid-cols-1 items-start gap-5">
           {!user && (
@@ -226,10 +97,7 @@ const Page = () => {
               <p className="font-rubik text-sm font-medium text-black">
                 Please Login to see your profile
               </p>
-              <button
-                onClick={onOpen}
-                className="flex items-center justify-center gap-1.5 rounded-xl bg-rose-500 py-2.5 font-rubik font-bold text-white duration-100 hover:bg-rose-600 active:scale-95 active:bg-rose-500"
-              >
+              <button className="flex items-center justify-center gap-1.5 rounded-lg bg-rose-500 py-2.5 font-rubik text-sm text-white duration-100 hover:bg-rose-600 active:scale-95 active:bg-rose-500">
                 Login
               </button>
             </div>
@@ -246,7 +114,21 @@ const Page = () => {
                   inputWrapper: "rounded-lg border shadow-none",
                   base: "font-rubik font-medium text-black text-sm",
                 }}
-                value={user?.displayName || ""}
+                isDisabled={!edit}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+              <Input
+                label="Email"
+                labelPlacement="outside"
+                // variant="bordered"
+                classNames={{
+                  inputWrapper: "rounded-lg border shadow-none",
+                  base: "font-rubik font-medium text-black text-sm",
+                }}
+                isDisabled={!edit}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
               <Input
                 label="Phone Number"
@@ -256,173 +138,40 @@ const Page = () => {
                   inputWrapper: "rounded-lg border shadow-none",
                   base: "font-rubik font-medium text-black text-sm",
                 }}
-                value={user?.phoneNumber || ""}
+                isDisabled={!edit}
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
               />
-              <div className="h-full w-full sm:col-span-3 sm:flex sm:justify-end">
-                <button
-                  onClick={handleLogout}
-                  className="flex w-full items-center justify-center gap-1.5 rounded-xl bg-rose-500 px-10 py-2.5 font-rubik font-bold text-white duration-100 hover:bg-rose-600 active:scale-95 active:bg-rose-500 sm:w-auto"
+              {!edit && (
+                <div
+                  onClick={() => setEdit(!edit)}
+                  className="h-full w-full sm:col-span-3 sm:flex sm:justify-end"
                 >
-                  Log Out
-                </button>
-              </div>
+                  <button className="flex items-center justify-center gap-1.5 rounded-lg bg-indigo-500 px-10 py-2.5 font-rubik text-sm text-white duration-100 hover:bg-indigo-600 active:scale-95 active:bg-indigo-500">
+                    Edit
+                  </button>
+                </div>
+              )}
+              {edit && (
+                <div className="flex items-center justify-end gap-5 sm:col-span-3">
+                  <button
+                    onClick={() => setEdit(!edit)}
+                    className="flex items-center justify-center gap-1.5 rounded-lg bg-gray-500 px-10 py-2.5 font-rubik text-sm text-white duration-100 hover:bg-gray-600 active:scale-95 active:bg-gray-500"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleUpdateProfile}
+                    className="flex items-center justify-center gap-1.5 rounded-lg bg-green-500 px-10 py-2.5 font-rubik text-sm text-white duration-100 hover:bg-green-600 active:scale-95 active:bg-green-500"
+                  >
+                    Save
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>
       </Wrapper>
-      <Modal
-        classNames={{
-          backdrop: "z-[899]",
-          wrapper: "z-[900]",
-        }}
-        backdrop="blur"
-        isOpen={isOpen}
-        onOpenChange={onOpenChange}
-      >
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader className="flex flex-col gap-1">
-                <span className="font-rubik text-2xl font-bold">
-                  {loginType === "login" ? "Login" : "Sign Up"}
-                </span>
-                <span className="font-rubik text-sm font-medium text-zinc-600">
-                  {loginType === "login"
-                    ? "Login to your account"
-                    : "Create an account"}
-                </span>
-              </ModalHeader>
-              <ModalBody>
-                <Input
-                  type="tel"
-                  label="Phone Number"
-                  placeholder="Enter your phone number"
-                  labelPlacement="outside"
-                  classNames={{
-                    inputWrapper: "rounded-lg border shadow-none",
-                    base: "font-rubik font-medium text-black text-sm col-span-2",
-                  }}
-                  value={phoneNumber}
-                  onValueChange={setPhoneNumber}
-                />
-                {actionStep === 1 && (
-                  <>
-                    <div id="recaptcha-container"></div>
-                  </>
-                )}
-                {actionStep === 2 && (
-                  <div className="relative col-span-2 flex w-full justify-center px-5 py-2.5">
-                    <OTPInput
-                      inputType="number"
-                      value={otp}
-                      placeholder="000000"
-                      // type="number"
-                      onChange={setOtp}
-                      numInputs={6}
-                      renderSeparator={<span>-</span>}
-                      renderInput={(props) => (
-                        <input
-                          {...props}
-                          style={{ width: "3rem", height: "3rem" }}
-                          className="rounded-md border p-4 text-center text-base"
-                        />
-                      )}
-                    />
-                  </div>
-                )}
-                {actionStep === 1 && (
-                  <button
-                    onClick={handleGetOtp}
-                    className="flex items-center justify-center gap-1.5 rounded-xl bg-rose-500 py-3.5 font-rubik font-bold text-white duration-100 hover:bg-rose-600 active:scale-95 active:bg-rose-500"
-                  >
-                    {isLoading && <Loader2 className="h-5 w-5 animate-spin" />}
-                    Send OTP
-                  </button>
-                )}
-                {actionStep === 2 && (
-                  <button
-                    onClick={handleVerifyOTP}
-                    className="flex items-center justify-center gap-1.5 rounded-xl bg-rose-500 py-3.5 font-rubik font-bold text-white duration-100 hover:bg-rose-600 active:scale-95 active:bg-rose-500"
-                  >
-                    {isLoading && <Loader2 className="h-5 w-5 animate-spin" />}
-                    Verify OTP
-                  </button>
-                )}
-                {loginType === "signup" && (
-                  <div className="grid grid-cols-2 gap-2.5">
-                    <div className="col-span-2 grid gap-2.5"></div>
-                    {actionStep === 3 && (
-                      <>
-                        <Input
-                          label="First Name"
-                          placeholder="Enter your first name"
-                          labelPlacement="outside"
-                          classNames={{
-                            inputWrapper: "rounded-lg border shadow-none",
-                            base: "font-rubik font-medium text-black text-sm",
-                          }}
-                          value={firstName}
-                          onValueChange={setFirstName}
-                        />
-                        <Input
-                          label="Last Name"
-                          placeholder="Enter your last name"
-                          labelPlacement="outside"
-                          classNames={{
-                            inputWrapper: "rounded-lg border shadow-none",
-                            base: "font-rubik font-medium text-black text-sm",
-                          }}
-                          value={lastName}
-                          onValueChange={setLastName}
-                        />
-                      </>
-                    )}
-                  </div>
-                )}
-                {loginType === "signup" && actionStep === 3 && (
-                  <button
-                    onClick={handleSignup}
-                    className={cn(
-                      "flex w-full items-center justify-center gap-1.5 rounded-xl bg-rose-500 py-3.5 font-rubik font-bold text-white duration-100 hover:bg-rose-600 active:scale-95 active:bg-rose-500",
-                      isLoading && "cursor-not-allowed opacity-50",
-                    )}
-                  >
-                    {isLoading && <Loader2 className="h-5 w-5 animate-spin" />}
-                    Sign Up
-                  </button>
-                )}
-
-                {loginType === "login" && (
-                  <div className="flex items-center justify-center py-2">
-                    <span className="text-sm font-medium text-zinc-600">
-                      Don&apos;t have an account?
-                    </span>
-                    <button
-                      className="ml-1 text-sm font-medium text-rose-500"
-                      onClick={() => setLoginType("signup")}
-                    >
-                      Sign Up
-                    </button>
-                  </div>
-                )}
-                {loginType === "signup" && (
-                  <div className="flex items-center justify-center py-2">
-                    <span className="text-sm font-medium text-zinc-600">
-                      Already have an account?
-                    </span>
-                    <button
-                      className="ml-1 text-sm font-medium text-rose-500"
-                      onClick={() => setLoginType("login")}
-                    >
-                      Login
-                    </button>
-                  </div>
-                )}
-              </ModalBody>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
     </>
   );
 };

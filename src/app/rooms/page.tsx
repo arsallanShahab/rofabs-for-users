@@ -924,7 +924,7 @@ const Page: FC = (props: Props) => {
                     <div className="flex items-center gap-2.5">
                       <Image
                         className="h-10 w-10 rounded-full"
-                        src={review.avatar as string}
+                        src={review.profilePicture as string}
                         alt={review.userName}
                         width={40}
                         height={40}

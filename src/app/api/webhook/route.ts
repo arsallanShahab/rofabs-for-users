@@ -1,10 +1,5 @@
-import {
-  BookingStatusEnum,
-  BookingTypeEnum,
-  PaymentStatusEnum,
-} from "@/lib/consts";
+import { BookingStatusEnum, PaymentStatusEnum } from "@/lib/consts";
 import { connectToDatabase } from "@/lib/mongodb";
-import { ObjectId } from "mongodb";
 import { validateWebhookSignature } from "razorpay/dist/utils/razorpay-utils";
 
 export async function POST(request: Request) {

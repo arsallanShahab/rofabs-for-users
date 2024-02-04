@@ -30,7 +30,7 @@ const Page = () => {
     const fetchMyBookings = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch("/api/bookings/user/" + user?.uid);
+        const response = await fetch("/api/bookings/user/" + user?.id);
         const data = (await response.json()) as {
           data: { booking: BookingProps; property: PropertyProps }[];
         };
@@ -59,7 +59,7 @@ const Page = () => {
         setIsLoading(false);
       }
     };
-    if (user?.uid) fetchMyBookings();
+    if (user?.id) fetchMyBookings();
   }, [user]);
 
   if (isLoading) {
@@ -77,6 +77,11 @@ const Page = () => {
       <div className="mx-auto max-w-screen-xl sm:px-5">
         <div className="grid gap-5 rounded-2xl py-5">
           <h3 className="font-sora text-4xl font-bold">My Bookings</h3>
+          {myBookings.length === 0 && !isLoading && (
+            <div className="flex items-center justify-start">
+              <p className="text-lg font-bold text-black">No bookings</p>
+            </div>
+          )}
           {isLoading && (
             <div className="flex items-center justify-start">
               <Loader2 className="mr-2.5 h-6 w-6 animate-spin" />

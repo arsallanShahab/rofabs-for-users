@@ -5,24 +5,24 @@ import { sign } from "jsonwebtoken";
 import { cookies } from "next/headers";
 
 export async function POST(req: Request, res: Response) {
-  const { email, password } = await req.json();
+  const { phoneNumber, otp } = await req.json();
   const cookieStore = cookies();
   try {
     const { db } = await connectToDatabase();
-    const isExists = await db.collection("users").findOne({ email });
+    const isExists = await db.collection("users").findOne({ phoneNumber, otp });
     if (!isExists) {
       return Response.json({
         message: "User not found",
         success: false,
       });
     }
-    const isPasswordSame = await comparePassword(password, isExists.password);
-    if (!isPasswordSame) {
-      return Response.json({
-        message: "Password is incorrect",
-        success: false,
-      });
-    }
+    // const isPasswordSame = await comparePassword(password, isExists.password);
+    // if (!isPasswordSame) {
+    //   return Response.json({
+    //     message: "Password is incorrect",
+    //     success: false,
+    //   });
+    // }
     const token = sign(
       {
         id: isExists._id,

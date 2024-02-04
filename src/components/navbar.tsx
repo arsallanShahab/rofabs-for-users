@@ -1,6 +1,4 @@
 "use client";
-
-import { PropertyTypeEnum } from "@/lib/consts";
 import { auth } from "@/lib/firebase";
 import { cn } from "@/lib/utils";
 import {
@@ -17,15 +15,6 @@ import {
   // Button,
   useDisclosure,
 } from "@nextui-org/react";
-import {
-  ConfirmationResult,
-  RecaptchaVerifier,
-  onAuthStateChanged,
-  signInWithPhoneNumber,
-  signOut,
-  updateProfile,
-} from "firebase/auth";
-import { doc } from "firebase/firestore";
 import { Bell, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -34,15 +23,6 @@ import toast from "react-hot-toast";
 import OTPInput from "react-otp-input";
 import { useGlobalContext } from "./context-provider";
 import { Button } from "./ui/button";
-declare global {
-  interface Window {
-    recaptchaVerifier: RecaptchaVerifier;
-    confirmationResult: ConfirmationResult;
-  }
-}
-
-auth.useDeviceLanguage();
-
 const links = [
   {
     name: "Home",
@@ -89,11 +69,10 @@ const Navbar: FC = () => {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [firstName, setFirstName] = React.useState<string>("");
   const [lastName, setLastName] = React.useState<string>("");
+  const [email, setEmail] = React.useState<string>("");
   const [phoneNumber, setPhoneNumber] = React.useState<string>("");
   const [otp, setOtp] = React.useState<string>("");
   const [actionStep, setActionStep] = React.useState<number>(1);
-  const [confirmationResult, setConfirmationResult] =
-    React.useState<ConfirmationResult | null>();
 
   const handleGetOtp = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -102,47 +81,24 @@ const Navbar: FC = () => {
       return;
     }
     setIsLoading(true);
-    // setActionStep(2);
-    // return;
-    const recaptchaVerifier = new RecaptchaVerifier(
-      auth,
-      "recaptcha-container",
-      {
-        size: "invisible",
-        callback: (response: any) => {
-          // reCAPTCHA solved, allow signInWithPhoneNumber.
-          setActionStep(2);
-        },
-      },
-    );
-
     try {
-      const confirmationResult = await signInWithPhoneNumber(
-        auth,
-        "+91" + phoneNumber,
-        recaptchaVerifier,
-      );
-      console.log(confirmationResult, "confirmationResult");
-      setConfirmationResult(confirmationResult);
-      if (confirmationResult.verificationId) {
-        toast.success("OTP sent successfully");
+      const res = await fetch("/api/auth/send-otp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ phoneNumber }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setActionStep(2);
+        toast.success(data.message);
       } else {
-        console.log("Verification code not provided.");
+        toast.error(data.message);
       }
-    } catch (error) {
-      const err = error as Error & { message: string };
-      console.log(err, "err");
-      toast.error(
-        err.message.includes("too many requests")
-          ? "Too many requests. Please try again later"
-          : err.message.includes("invalid phone number")
-            ? "Invalid phone number"
-            : err.message.includes(
-                  "The SMS quota for this project has been exceeded",
-                )
-              ? "SMS quota exceeded"
-              : err.message,
-      );
+    } catch (err) {
+      console.log(err);
     } finally {
       setIsLoading(false);
     }
@@ -151,11 +107,6 @@ const Navbar: FC = () => {
   const handleVerifyOTP = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setIsLoading(true);
-    if (!confirmationResult) {
-      toast.error("OTP not sent");
-      setIsLoading(false);
-      return;
-    }
     if (otp.length !== 6) {
       toast.error("OTP must be 6 digits");
       setIsLoading(false);
@@ -163,33 +114,42 @@ const Navbar: FC = () => {
     }
     try {
       setIsLoading(true);
-      const res = await confirmationResult?.confirm(otp).then((result) => {
-        console.log(result.user, "result user");
-        setUser({
-          displayName: result.user?.displayName as string,
-          phoneNumber: result.user?.phoneNumber as string,
-          photoUrl: result.user?.photoURL as string,
-          uid: result.user?.uid,
-        });
+      const res = await fetch("/api/auth/verify-otp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ phoneNumber, otp }),
       });
-      console.log(res, "res");
-      toast.success("OTP verified successfully");
-      if (loginType === "signup") {
+      const data = await res.json();
+      if (!data.success) {
+        return toast.error(data.message);
+      }
+
+      if ((!data?.data?.name || !data?.data?.email) && loginType === "login") {
+        setLoginType("signup");
         setActionStep(3);
-      } else {
-        setIsLoading(false);
-        setActionStep(1);
+        toast.error("Please sign up first");
+        return;
+      }
+      if (data?.success) {
+        if (loginType === "signup") {
+          setOtp("");
+          return setActionStep(3);
+        }
+        toast.success(data?.message);
+        setUser(data?.data);
+        onOpenChange();
         setOtp("");
         setPhoneNumber("");
         setFirstName("");
         setLastName("");
-        setLoginType("login");
-        onOpenChange();
+        setEmail("");
+        setActionStep(1);
       }
     } catch (error) {
       const err = error as Error & { message: string };
       console.error("Error signing in with phone number: " + err.message);
-      toast.error(err.message.includes("code") ? "Invalid OTP" : err.message);
     } finally {
       setIsLoading(false);
     }
@@ -197,37 +157,27 @@ const Navbar: FC = () => {
 
   const handleSignup = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    if (auth.currentUser === null) {
-      toast.error("User not found");
-      return;
-    }
     try {
       setIsLoading(true);
-      const res = updateProfile(auth.currentUser, {
-        displayName: firstName + " " + lastName,
-        photoURL: "https://picsum.photos/seed/NWbJM2B/640/480",
-
-        // email: email,
-      });
-      const addToMongoDB = await fetch("/api/auth/mongodb/add-user", {
+      const res = await fetch("/api/auth/signup", {
         method: "POST",
-        body: JSON.stringify({
-          id: auth.currentUser.uid,
-          name: firstName + " " + lastName,
-          phoneNumber: phoneNumber,
-          avatar: "https://picsum.photos/seed/NWbJM2B/640/480",
-        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ phoneNumber, firstName, lastName, email }),
       });
-      const mongodbData = await addToMongoDB.json();
-      console.log(mongodbData, "mongodbData");
-      const data = await res;
-      console.log(data, "data");
-      toast.success("Profile updated successfully");
-      onOpenChange();
+      const data = await res.json();
+      if (data?.success) {
+        toast.success(data?.message);
+        setUser(data?.user);
+        onOpenChange();
+      } else {
+        toast.error(data.message);
+      }
     } catch (error) {
       const err = error as Error & { message: string; succes: boolean };
       console.log(err);
-      toast.error(err.message);
+      toast.error(err?.message);
     } finally {
       setIsLoading(false);
     }
@@ -237,7 +187,16 @@ const Navbar: FC = () => {
     e.preventDefault();
     try {
       setIsLoading(true);
-      const res = signOut(auth);
+      const res = await fetch("/api/auth/logout", {
+        method: "POST",
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success(data.message);
+        setUser(null);
+      } else {
+        toast.error(data.message);
+      }
     } catch (error) {
       const err = error as Error & { message: string; succes: boolean };
       console.log(err);
@@ -250,24 +209,17 @@ const Navbar: FC = () => {
   useEffect(() => {
     const getUser = async () => {
       try {
-        onAuthStateChanged(auth, (user) => {
-          if (user?.displayName && user?.phoneNumber && user?.photoURL) {
-            setUser({
-              displayName: user.displayName,
-              phoneNumber: user.phoneNumber,
-              photoUrl: user.photoURL,
-              uid: user.uid,
-            });
-            console.log(user, "user");
-            setIsLoadingUser(false);
-          } else {
-            setUser(null);
-            setIsLoadingUser(false);
-          }
-        });
+        const res = await fetch("/api/auth/me");
+        const data = await res.json();
+        if (data.success) {
+          setUser(data.data);
+        } else {
+          setUser(null);
+        }
       } catch (error) {
         console.log(error);
         setUser(null);
+      } finally {
         setIsLoadingUser(false);
       }
     };
@@ -313,14 +265,12 @@ const Navbar: FC = () => {
                       isBordered
                       as="button"
                       className="border-zinc-200 font-medium transition-transform"
-                      name={user?.displayName?.toUpperCase()}
+                      name={user?.name?.toUpperCase()}
                       size="sm"
-                      src={"https://picsum.photos/seed/NWbJM2B/640/480"}
+                      src={user?.profilePicture}
                     />
                     <div className="flex flex-col items-start justify-center">
-                      <p className="text-xs font-semibold">
-                        {user?.displayName}
-                      </p>
+                      <p className="text-xs font-semibold">{user?.name}</p>
                       <p className="text-xs font-medium text-zinc-600">
                         {user?.phoneNumber}
                       </p>
@@ -330,7 +280,7 @@ const Navbar: FC = () => {
                 <DropdownMenu aria-label="Profile Actions" variant="flat">
                   <DropdownItem key="profile" className="h-14 gap-2">
                     <p className="font-semibold">Signed in as</p>
-                    <p className="font-semibold">{user?.phoneNumber}</p>
+                    <p className="font-semibold">{user?.email}</p>
                   </DropdownItem>
                   <DropdownItem
                     key="profile_link"
@@ -486,6 +436,17 @@ const Navbar: FC = () => {
                           value={lastName}
                           onValueChange={setLastName}
                         />
+                        <Input
+                          label="Email"
+                          placeholder="Enter your email"
+                          labelPlacement="outside"
+                          classNames={{
+                            inputWrapper: "rounded-lg border shadow-none",
+                            base: "font-rubik font-medium text-black text-sm col-span-2",
+                          }}
+                          value={email}
+                          onValueChange={setEmail}
+                        />
                       </>
                     )}
                   </div>
@@ -522,7 +483,10 @@ const Navbar: FC = () => {
                     </span>
                     <button
                       className="ml-1 text-sm font-medium text-rose-500"
-                      onClick={() => setLoginType("signup")}
+                      onClick={() => {
+                        setLoginType("signup");
+                        setActionStep(1);
+                      }}
                     >
                       Sign Up
                     </button>
@@ -535,7 +499,10 @@ const Navbar: FC = () => {
                     </span>
                     <button
                       className="ml-1 text-sm font-medium text-rose-500"
-                      onClick={() => setLoginType("login")}
+                      onClick={() => {
+                        setLoginType("login");
+                        setActionStep(1);
+                      }}
                     >
                       Login
                     </button>

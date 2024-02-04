@@ -70,7 +70,7 @@ const RoomCard: FC<Props> = ({
   const handleSelectRoom = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
-    if (!user || !user.uid) {
+    if (!user || !user.id) {
       toast.error("Please login to continue.");
       return;
     }

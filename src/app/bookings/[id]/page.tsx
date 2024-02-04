@@ -145,7 +145,7 @@ const Page = () => {
         userEmailAddress: booking?.guestEmail as string,
         rating: rating as number,
         review: review as string,
-        avatar: user?.photoUrl as string,
+        profilePicture: user?.profilePicture as string,
       };
       console.log(body);
       const res = await fetch(`/api/reviews/add`, {
