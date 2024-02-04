@@ -211,8 +211,8 @@ export default function Home() {
                   onSelectionChange={(key) => {
                     setLocation(key);
                     setError(false);
-                    if (key) {
-                      setInputValue(key.toString().split("&&")[0]);
+                    if (key.toString().length > 0) {
+                      setInputValue(key.toString()?.split("&&")[0]);
                     }
                   }}
                   // variant="bordered"

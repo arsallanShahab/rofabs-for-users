@@ -18,7 +18,8 @@ import {
   signOut,
   updateProfile,
 } from "firebase/auth";
-import { Loader2 } from "lucide-react";
+import { ChevronLast, ChevronLeft, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import React from "react";
 import toast from "react-hot-toast";
 import OTPInput from "react-otp-input";
@@ -43,6 +44,8 @@ const Page = () => {
   const [actionStep, setActionStep] = React.useState<number>(1);
   const [confirmationResult, setConfirmationResult] =
     React.useState<ConfirmationResult | null>();
+
+  const router = useRouter();
 
   const handleGetOtp = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -208,11 +211,16 @@ const Page = () => {
   return (
     <>
       <Wrapper>
-        <div className="grid h-full w-full grid-cols-1 items-start gap-5">
-          {" "}
-          <h3 className="font-rubik text-2xl font-medium text-black">
+        <div className="flex items-center justify-start">
+          <h3
+            onClick={() => router.back()}
+            className="flex cursor-pointer items-center justify-start gap-1 rounded-xl p-2.5 pr-4 font-rubik text-4xl font-medium text-black duration-100 hover:bg-zinc-100 active:-translate-x-2 active:scale-95 active:bg-zinc-50"
+          >
+            <ChevronLeft size={24} className="h-8 w-8 stroke-[3px]" />
             Profile
           </h3>
+        </div>
+        <div className="grid h-full w-full grid-cols-1 items-start gap-5">
           {!user && (
             <div className="grid gap-5 rounded-2xl bg-white p-4">
               <p className="font-rubik text-sm font-medium text-black">
@@ -226,6 +234,7 @@ const Page = () => {
               </button>
             </div>
           )}
+          {user && <div className=""></div>}
           {user && (
             <div className="grid gap-5 rounded-2xl border bg-white p-4 shadow-sm sm:grid-cols-3">
               {" "}
