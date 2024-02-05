@@ -58,9 +58,17 @@ const links = [
   },
 ];
 const Navbar: FC = () => {
-  const { user, setUser, isLoadingUser, setIsLoadingUser } = useGlobalContext();
+  const {
+    user,
+    setUser,
+    isLoadingUser,
+    setIsLoadingUser,
+    isOpen,
+    onOpen,
+    onOpenChange,
+  } = useGlobalContext();
   const pathname = usePathname();
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
   const router = useRouter();
 
   // const [isLoadingUser, setIsLoadingUser] = React.useState<boolean>(true);
@@ -231,7 +239,7 @@ const Navbar: FC = () => {
     <>
       <div
         className={cn(
-          "sticky top-0 z-[99] mx-auto max-w-screen-2xl bg-white bg-opacity-60 backdrop-blur-lg sm:block",
+          "relative top-0 z-[99] mx-auto max-w-screen-2xl bg-white bg-opacity-60 backdrop-blur-lg sm:block",
           pathname === "/" && "relative",
         )}
       >

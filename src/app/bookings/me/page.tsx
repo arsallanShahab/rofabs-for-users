@@ -6,13 +6,14 @@ import { Tab, Tabs } from "@nextui-org/react";
 import dayjs from "dayjs";
 import { BedDouble, Hotel, Loader2, User2 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { BookingProps, PropertyProps } from "../../search/types";
 
 const Page = () => {
   const { user } = useGlobalContext();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [myBookings, setMyBookings] = useState<
     { booking: BookingProps; property: PropertyProps }[]
   >([]);
@@ -25,6 +26,8 @@ const Page = () => {
   const [myCancelledBookings, setMyCancelledBookings] = useState<
     { booking: BookingProps; property: PropertyProps }[]
   >([]);
+
+  const router = useRouter();
 
   useEffect(() => {
     const fetchMyBookings = async () => {
@@ -61,6 +64,14 @@ const Page = () => {
     };
     if (user?.id) fetchMyBookings();
   }, [user]);
+
+  useEffect(() => {
+    if (isLoading && !user?.id) {
+      setIsLoading(false);
+      router.push("/profile");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading, user]);
 
   if (isLoading) {
     return (

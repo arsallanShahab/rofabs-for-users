@@ -5,16 +5,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Label } from "@/components/ui/label";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { RoomCategoryEnum, RoomTypeEnum } from "@/lib/consts";
 import { cn } from "@/lib/utils";
 import {
   Autocomplete,
   AutocompleteItem,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
   Select,
   SelectItem,
   Selection,
@@ -56,6 +54,9 @@ const TabsConstants = Object.freeze({
 export default function Home() {
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  const [popoverActiveCheckIn, setPopoverActiveCheckIn] = useState(false);
+  const [popoverActiveCheckOut, setPopoverActiveCheckOut] = useState(false);
 
   const [checkInDate, setCheckInDate] = useState<Date>();
   const [checkOutDate, setCheckOutDate] = useState<Date>();
@@ -149,7 +150,7 @@ export default function Home() {
         <title>Rofabs for users</title>
       </Head>
       <main
-        className={`relative grid w-full grid-cols-1 bg-gradient-to-br from-sky-400 to-blue-800 py-5 sm:py-20 md:grid-cols-2`}
+        className={`relative grid w-full grid-cols-1 bg-gradient-to-br from-sky-400 to-blue-800 pb-12 pt-5 sm:pb-20 sm:pt-20 md:grid-cols-2`}
       >
         <div className="relative hidden h-full w-full md:block">
           <div className="relative flex h-full w-full flex-col items-end justify-start gap-5 p-10">
@@ -293,8 +294,14 @@ export default function Home() {
               <div className="col-span-2 grid  grid-cols-1 gap-2.5 sm:grid-cols-2">
                 <div className="flex w-auto flex-col items-start gap-1.5 font-rubik">
                   <Label className="text-lg">Check in</Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
+                  <Popover
+                    showArrow
+                    isDismissable
+                    backdrop="blur"
+                    isOpen={popoverActiveCheckIn}
+                    onOpenChange={(open) => setPopoverActiveCheckIn(open)}
+                  >
+                    <PopoverTrigger>
                       <Button
                         variant={"secondary"}
                         className={cn(
@@ -314,8 +321,11 @@ export default function Home() {
                       <Calendar
                         mode="single"
                         selected={checkInDate}
-                        onSelect={setCheckInDate}
-                        initialFocus
+                        onSelect={(date) => {
+                          setCheckInDate(date);
+                          setPopoverActiveCheckIn(false);
+                          // Close the popover here
+                        }}
                       />
                     </PopoverContent>
                   </Popover>
@@ -330,8 +340,14 @@ export default function Home() {
                 )}
                 <div className="flex w-auto flex-col items-start gap-1.5 font-rubik">
                   <Label className="text-lg">Check out</Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
+                  <Popover
+                    showArrow
+                    isDismissable
+                    backdrop="blur"
+                    isOpen={popoverActiveCheckOut}
+                    onOpenChange={(open) => setPopoverActiveCheckOut(open)}
+                  >
+                    <PopoverTrigger>
                       <Button
                         variant={"secondary"}
                         className={cn(
@@ -355,12 +371,15 @@ export default function Home() {
                           if (date && checkInDate) {
                             if (date > checkInDate) {
                               setCheckOutDate(date);
+                              setPopoverActiveCheckOut(false);
                             } else {
+                              setPopoverActiveCheckOut(false);
                               toast.error(
                                 "Check-out date should be greater than check-in date",
                               );
                             }
                           } else {
+                            setPopoverActiveCheckOut(false);
                             toast.error("Please select check-in date");
                           }
                         }}

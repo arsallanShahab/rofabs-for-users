@@ -10,16 +10,19 @@ const BottomBar: FC = () => {
 
   useEffect(() => {
     const { current } = ref;
-    if (current) {
-      document.body.style.paddingBottom = `${current.clientHeight}px`;
-      console.log(ref.current?.clientHeight);
+    if (document.body) {
+      document.body.style.paddingBottom = "100px";
     }
-  }, [ref]);
+    // if (current) {
+    //   document.body.style.paddingBottom = `${current.clientHeight}px`;
+    //   console.log(ref.current?.clientHeight);
+    // }
+  }, []);
   return (
     <div
       ref={ref}
       className="fixed inset-x-0 bottom-0 z-[99] flex border bg-white
-  px-1.5 py-2 font-rubik shadow-[0_-0px_-6px_-1px_rgba(0,0,0,0.2),0_-2px_-4px_-2px_rgbs(0,0,0,0.1)] *:flex *:flex-1 *:flex-col *:items-center *:justify-center *:text-center *:font-medium sm:hidden 
+  px-1.5 py-1 font-rubik shadow-[0_-0px_-6px_-1px_rgba(0,0,0,0.2),0_-2px_-4px_-2px_rgbs(0,0,0,0.1)] *:flex *:flex-1 *:flex-col *:items-center *:justify-center *:text-center *:font-medium sm:hidden 
   "
     >
       <Link

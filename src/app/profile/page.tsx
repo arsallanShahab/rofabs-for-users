@@ -9,7 +9,8 @@ import React, { useEffect } from "react";
 import toast from "react-hot-toast";
 
 const Page = () => {
-  const { user, isLoadingUser, setUser } = useGlobalContext();
+  const { user, isLoadingUser, setUser, isOpen, onOpen, onOpenChange } =
+    useGlobalContext();
   const [edit, setEdit] = React.useState<boolean>(false);
   const [name, setName] = React.useState<string>("");
   const [email, setEmail] = React.useState<string>("");
@@ -79,17 +80,22 @@ const Page = () => {
         <div className="flex items-center justify-between">
           <h3
             onClick={() => router.back()}
-            className="flex cursor-pointer items-center justify-start gap-1 rounded-xl p-2.5 pr-4 font-rubik text-4xl font-medium text-black duration-100 hover:bg-zinc-100 active:-translate-x-2 active:scale-95 active:bg-zinc-50"
+            className="flex cursor-pointer items-center justify-start gap-1 rounded-xl p-2.5 pr-4 font-rubik text-2xl font-medium text-black duration-100 hover:bg-zinc-100 active:-translate-x-2 active:scale-95 active:bg-zinc-50 sm:text-4xl"
           >
-            <ChevronLeft size={24} className="h-8 w-8 stroke-[3px]" />
+            <ChevronLeft
+              size={24}
+              className="h-6 w-6 stroke-[3px] sm:h-8 sm:w-8"
+            />
             Profile
           </h3>
-          <button
-            onClick={handleLogout}
-            className="flex items-center justify-center gap-1.5 rounded-lg bg-rose-500 px-7 py-2.5 font-rubik text-sm text-white duration-100 hover:bg-rose-600 active:scale-95 active:bg-rose-500"
-          >
-            Log Out
-          </button>
+          {user?.id && (
+            <button
+              onClick={handleLogout}
+              className="flex items-center justify-center gap-1.5 rounded-lg bg-rose-500 px-7 py-2.5 font-rubik text-sm text-white duration-100 hover:bg-rose-600 active:scale-95 active:bg-rose-500"
+            >
+              Log Out
+            </button>
+          )}
         </div>
         <div className="grid h-full w-full grid-cols-1 items-start gap-5">
           {!user && (
@@ -97,7 +103,10 @@ const Page = () => {
               <p className="font-rubik text-sm font-medium text-black">
                 Please Login to see your profile
               </p>
-              <button className="flex items-center justify-center gap-1.5 rounded-lg bg-rose-500 py-2.5 font-rubik text-sm text-white duration-100 hover:bg-rose-600 active:scale-95 active:bg-rose-500">
+              <button
+                onClick={onOpen}
+                className="flex items-center justify-center gap-1.5 rounded-lg bg-rose-500 py-2.5 font-rubik text-sm text-white duration-100 hover:bg-rose-600 active:scale-95 active:bg-rose-500"
+              >
                 Login
               </button>
             </div>
