@@ -3,11 +3,9 @@ import { Checkbox, Input, Textarea } from "@nextui-org/react";
 import {
   Facebook,
   Instagram,
-  Landmark,
   Mail,
   MapPin,
   PhoneCall,
-  PinIcon,
   Twitter,
 } from "lucide-react";
 import React from "react";
