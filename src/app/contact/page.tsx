@@ -24,12 +24,12 @@ const Page = (props: Props) => {
         </p>
       </div>
       <div className="grid grid-cols-7 rounded-xl border bg-white p-3 sm:min-h-[600px]">
-        <div className="col-span-7 flex flex-col items-start justify-between gap-10 rounded-xl bg-indigo-600 p-10 sm:col-span-3">
+        <div className="col-span-7 flex flex-col items-start justify-between gap-10 rounded-xl bg-black p-10 sm:col-span-3">
           <div>
             <h1 className="font-sora text-3xl font-medium text-white">
               Contact Information
             </h1>
-            <p className="text-left font-normal text-white/75">
+            <p className="text-left font-medium text-gray-500">
               Say something to start a live chat!
             </p>
           </div>
@@ -175,7 +175,7 @@ const Page = (props: Props) => {
               }}
             ></Textarea>
             <div className="flex items-center justify-end">
-              <button className="flex h-12 items-center justify-center rounded-lg bg-indigo-600 px-7 font-rubik font-medium text-white">
+              <button className="flex h-12 items-center justify-center rounded-lg bg-black px-7 font-rubik font-medium text-white">
                 Send Message
               </button>
             </div>
