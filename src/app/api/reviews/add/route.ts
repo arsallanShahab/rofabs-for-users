@@ -13,7 +13,7 @@ export async function POST(req: Request) {
     userName: payload.userName,
     userPhoneNumber: payload.userPhoneNumber,
     userEmailAddress: payload.userEmailAddress,
-    avatar: payload.avatar,
+   
     rating: payload.rating,
     review: payload.review,
     createdAt: new Date(),
