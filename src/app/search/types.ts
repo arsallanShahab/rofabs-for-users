@@ -185,6 +185,7 @@ export interface ComplaintProps {
 }
 
 export interface ReviewProps {
+  avatar: any;
   _id?: ObjectId;
   owner_user_id: ObjectId;
   propertyId: ObjectId;
