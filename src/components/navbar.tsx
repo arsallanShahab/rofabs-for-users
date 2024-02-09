@@ -44,13 +44,14 @@ const links = [
     name: "Cities",
     href: "/cities",
   },
-  {
-    name: "About",
-    href: "/about",
-  },
+
   {
     name: "Contact Us",
     href: "/contact",
+  },
+  {
+    name: "About Us",
+    href: "/about",
   },
   {
     name: "FAQ's",

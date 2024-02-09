@@ -11,15 +11,18 @@ const nextConfig = {
         protocol: "https",
         hostname: "picsum.photos",
       },
+      {
+        protocol: "https",
+        hostname: "fastly.picsum.photos",
+      },
     ],
   },
 };
 
 module.exports = nextConfig;
 
-
-module.exports = {
-  images: {
-    domains: ['via.placeholder.com'],
-  },
-};
+// module.exports = {
+//   images: {
+//     domains: ["via.placeholder.com"],
+//   },
+// };
