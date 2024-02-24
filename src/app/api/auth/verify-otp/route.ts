@@ -14,12 +14,6 @@ export async function POST(req: Request, res: Response) {
     if (!user) {
       return Response.json({ message: "Invalid OTP", success: false });
     }
-    // if (!user?.name) {
-    //   return Response.json({
-    //     message: "Please signup first",
-    //     success: false,
-    //   });
-    // }
     const res = await db.collection("users").updateOne(
       { phoneNumber },
       {

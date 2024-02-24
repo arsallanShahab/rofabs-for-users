@@ -23,7 +23,10 @@ async function sendOTP(phoneNumber: number, OTP: number) {
 export async function POST(req: Request) {
   const { phoneNumber } = await req.json();
   try {
+    // Add or update OTP in MongoDB
     const { db } = await connectToDatabase();
+    const user = await db.collection("users").findOne({ phoneNumber });
+    console.log(user, "user");
     const otp = Math.floor(100000 + Math.random() * 900000);
     const response = await sendOTP(phoneNumber, otp);
     const data = await response.json();
@@ -34,8 +37,7 @@ export async function POST(req: Request) {
         success: false,
       });
     }
-    // Add or update OTP in MongoDB
-    const user = await db.collection("users").findOne({ phoneNumber });
+
     if (!user) {
       await db.collection("users").insertOne({
         phoneNumber,

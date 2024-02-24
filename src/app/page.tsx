@@ -1,6 +1,7 @@
 "use client";
 
 import UiButton from "@/components/button";
+import { useGlobalContext } from "@/components/context-provider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -22,9 +23,12 @@ import dayjs from "dayjs";
 import { debounce } from "lodash";
 import { CalendarIcon, SearchIcon } from "lucide-react";
 import Head from "next/head";
+import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Key, useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { Autoplay } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
 
 type AutocompleteData = {
   place_id: string;
@@ -52,6 +56,18 @@ const TabsConstants = Object.freeze({
 });
 
 export default function Home() {
+  const { user, onOpen, isLoadingUser } = useGlobalContext();
+  useEffect(() => {
+    // First, ensure the user loading process is complete
+    if (!isLoadingUser) {
+      // Once loading is complete, check if the user is not logged in
+      if (!user || !user.id) {
+        onOpen(); // This opens the login modal if the user is not logged in
+        // toast.error("Please login to continue.");
+      }
+    }
+  }, [user, onOpen, isLoadingUser]); // Depends on user, onOpen, and isLoadingUser
+
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -447,6 +463,224 @@ export default function Home() {
           </div>
         </div>
       </main>
+
+      <div className="mx-auto flex max-w-screen-2xl flex-col gap-20 px-7 py-10 *:w-full sm:px-10 sm:py-20">
+        <div className="grid items-center gap-10 bg-white sm:grid-cols-2">
+          <div className="h-[350px]">
+            <Image
+              src={"/images/apartments/comfyroom.jpg"}
+              height={400}
+              width={400}
+              className="h-full w-full rounded-xl object-cover"
+              alt="hero-image"
+            />
+          </div>
+          <div className="flex flex-col items-start gap-7">
+            <h1 className="max-w-xl font-sora text-3xl font-bold sm:text-5xl">
+              Start living your best life from day one
+            </h1>
+            <p className="text-md max-w-lg font-medium text-gray-500 sm:text-xl">
+              Bring a box full of hopes, dreams, ambitions... and of course,
+              your personal belongings. Everything else - furniture, appliances,
+              food - has already been taken care of.
+            </p>
+          </div>
+        </div>
+        <Swiper
+          modules={[Autoplay]}
+          // slidesPerView={3}
+          spaceBetween={30}
+          pagination={{
+            clickable: true,
+          }}
+          breakpoints={{
+            // when window width is >= 640px
+            640: {
+              slidesPerView: 1,
+              spaceBetween: 20,
+            },
+            // when window width is >= 768px
+            768: {
+              slidesPerView: 2,
+              spaceBetween: 30,
+            },
+            // when window width is >= 1200px
+            1200: {
+              slidesPerView: 3,
+              spaceBetween: 30,
+            },
+          }}
+          autoplay={{
+            delay: 2000,
+            disableOnInteraction: false,
+          }}
+          loop={true}
+          navigation={true}
+          className="mySwiper max-h-[400px]"
+        >
+          <SwiperSlide>
+            <Image
+              src={"/images/cities/bangalore.jpg"}
+              height={400}
+              width={400}
+              className="h-full w-full rounded-xl object-cover"
+              alt="hero-image"
+            />
+            <p className="mt-2.5 text-left font-rubik text-xl font-medium">
+              Bangalore
+            </p>
+          </SwiperSlide>
+          <SwiperSlide>
+            <Image
+              src={"/images/cities/chennai.jpg"}
+              height={400}
+              width={400}
+              className="h-full w-full rounded-xl object-cover"
+              alt="hero-image"
+            />
+            <p className="mt-2.5 text-left font-rubik text-xl font-medium">
+              Chennai
+            </p>
+          </SwiperSlide>
+          <SwiperSlide>
+            <Image
+              src={"/images/cities/delhi.jpg"}
+              height={400}
+              width={400}
+              className="h-full w-full rounded-xl object-cover"
+              alt="hero-image"
+            />
+            <p className="mt-2.5 text-left font-rubik text-xl font-medium">
+              Delhi
+            </p>
+          </SwiperSlide>
+          <SwiperSlide>
+            <Image
+              src={"/images/cities/hyderabad.jpg"}
+              height={400}
+              width={400}
+              className="h-full w-full rounded-xl object-cover"
+              alt="hero-image"
+            />
+            <p className="mt-2.5 text-left font-rubik text-xl font-medium">
+              Hyderabad
+            </p>
+          </SwiperSlide>
+          <SwiperSlide>
+            <Image
+              src={"/images/cities/mumbai.jpg"}
+              height={400}
+              width={400}
+              className="h-full w-full rounded-xl object-cover"
+              alt="hero-image"
+            />
+            <p className="mt-2.5 text-left font-rubik text-xl font-medium">
+              Mumbai
+            </p>
+          </SwiperSlide>
+          <SwiperSlide>
+            <Image
+              src={"/images/cities/pune.jpg"}
+              height={400}
+              width={400}
+              className="h-full w-full rounded-xl object-cover"
+              alt="hero-image"
+            />
+            <p className="mt-2.5 text-left font-rubik text-xl font-medium">
+              Pune
+            </p>
+          </SwiperSlide>
+          <SwiperSlide>
+            <Image
+              src={"/images/cities/kolkata.jpg"}
+              height={400}
+              width={400}
+              className="h-full w-full rounded-xl object-cover"
+              alt="hero-image"
+            />
+            <p className="mt-2.5 text-left font-rubik text-xl font-medium">
+              Kolkata
+            </p>
+          </SwiperSlide>
+        </Swiper>
+        <div className="flex flex-col gap-5 *:w-full">
+          <h1 className="font-sora text-3xl font-bold sm:text-5xl">
+            Experience the Signature Stays
+          </h1>
+          <p className="max-w-lg text-medium font-medium text-gray-500 sm:text-lg">
+            We have the best hotels, hostels and more for your next stay. From
+            cozy country homes to funky city apartments, we have something for
+            every taste and budget.
+          </p>
+          {/* //bento grid system */}
+          <div className="grid grid-cols-5 grid-rows-[200px] gap-5 pt-5">
+            <div className="col-span-5 row-span-2 sm:col-span-3">
+              <Image
+                src={"/images/apartments/img1.jpg"}
+                height={400}
+                width={400}
+                className="h-full w-full rounded-xl object-cover"
+                alt="hero-image"
+              />
+            </div>
+            <div className="col-span-3 row-span-1 sm:col-span-1">
+              <Image
+                src={"/images/apartments/img2.jpg"}
+                height={300}
+                width={300}
+                className="h-full w-full rounded-xl object-cover"
+                alt="hero-image"
+              />
+            </div>
+            <div className="col-span-2 row-span-1 sm:col-span-1">
+              <Image
+                src={"/images/apartments/img3.jpg"}
+                height={300}
+                width={300}
+                className="h-full w-full rounded-xl object-cover"
+                alt="hero-image"
+              />
+            </div>
+            <div className="col-span-2 row-span-1 sm:col-span-1">
+              <Image
+                src={"/images/apartments/pg1.jpg"}
+                height={300}
+                width={300}
+                className="h-full w-full rounded-xl object-cover"
+                alt="hero-image"
+              />
+            </div>
+            <div className="col-span-3 row-span-1 sm:col-span-1">
+              <Image
+                src={"/images/apartments/pg2.png"}
+                height={300}
+                width={300}
+                className="h-full w-full rounded-xl object-cover"
+                alt="hero-image"
+              />
+            </div>
+          </div>
+        </div>
+        <div className="grid gap-10 rounded-xl bg-zinc-100 p-10 sm:grid-cols-2">
+          <Image
+            src={"/images/hero-image.png"}
+            height={400}
+            width={400}
+            className="h-full max-h-96 w-full rounded-xl object-contain"
+            alt="hero-image"
+          />
+          <div className="flex flex-col items-center justify-center gap-5 text-center sm:items-start sm:text-left">
+            <h1 className="font-sora text-3xl font-bold sm:text-5xl">
+              The future is flexible.
+            </h1>
+            <p className="max-w-lg text-lg font-medium text-gray-500">
+              We believe in a world where finding a home is just a click away.
+              Whether you&apos;re travelling for work or moving to a new city.
+              Just bring your bags, and we&apos;ll handle your stay.
+            </p>
+          </div>
+        </div>
+      </div>
     </>
   );
 }

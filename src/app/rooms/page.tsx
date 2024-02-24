@@ -452,7 +452,7 @@ const Page: FC = (props: Props) => {
       </div>
       <div
         ref={tabBar}
-        className="sticky left-0 top-[72px] z-[89] w-full overflow-x-auto border-y bg-white text-black shadow-lg"
+        className="sticky left-0 top-[0px] z-[89] w-full overflow-x-auto border-y bg-white text-black shadow-lg"
       >
         <ScrollShadow orientation="horizontal" size={100}>
           <div className="mx-auto flex w-full max-w-screen-xl justify-start py-3.5 *:break-keep">

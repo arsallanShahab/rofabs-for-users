@@ -1,6 +1,7 @@
 "use client";
 
 import BottomBar from "@/components/bottom-bar";
+import Footer from "@/components/footer";
 import Navbar from "@/components/navbar";
 import { Providers } from "@/components/providers";
 // import { Toaster } from "@/components/ui/sonner";
@@ -37,6 +38,7 @@ export default function RootLayout({
             },
           }}
         />
+        <Footer />
       </body>
 
       <Script src="https://checkout.razorpay.com/v1/checkout.js" />

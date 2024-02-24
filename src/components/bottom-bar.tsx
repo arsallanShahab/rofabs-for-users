@@ -8,16 +8,35 @@ const BottomBar: FC = () => {
   const pathname = usePathname();
   const ref = useRef<HTMLDivElement>(null);
 
+  // useEffect(() => {
+  //   const { current } = ref;
+  //   if (document.body) {
+  //     document.body.style.paddingBottom = "100px";
+  //   }
+  // }, []);
+  //intersection observer
   useEffect(() => {
     const { current } = ref;
-    if (document.body) {
-      document.body.style.paddingBottom = "100px";
-    }
-    // if (current) {
-    //   document.body.style.paddingBottom = `${current.clientHeight}px`;
-    //   console.log(ref.current?.clientHeight);
-    // }
-  }, []);
+    if (!current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          if (document.body) {
+            document.body.style.paddingBottom = "100px";
+          }
+        } else {
+          if (document.body) {
+            document.body.style.paddingBottom = "0px";
+          }
+        }
+      },
+      { threshold: 0.5 },
+    );
+    observer.observe(current);
+    return () => {
+      observer.disconnect();
+    };
+  }, [ref]);
   return (
     <div
       ref={ref}

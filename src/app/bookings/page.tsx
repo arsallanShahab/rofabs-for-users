@@ -477,7 +477,7 @@ const Page: FC = () => {
           </div>
         </div>
         <div className="col-span-6 sm:col-span-2">
-          <div className="sticky top-24">
+          <div className="sticky top-5">
             <div className="rounded-xl border bg-white">
               <div className="border-b px-7 py-5">
                 <h3 className="font-rubik text-xl font-semibold">
