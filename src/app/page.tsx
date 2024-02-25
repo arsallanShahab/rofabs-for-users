@@ -661,7 +661,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <div className="grid gap-10 rounded-xl bg-zinc-100 p-10 sm:grid-cols-2">
+        <div className="grid gap-10 rounded-xl bg-zinc-100 p-5 sm:grid-cols-2 sm:p-10">
           <Image
             src={"/images/hero-image.png"}
             height={400}
@@ -669,11 +669,11 @@ export default function Home() {
             className="h-full max-h-96 w-full rounded-xl object-contain"
             alt="hero-image"
           />
-          <div className="flex flex-col items-center justify-center gap-5 text-center sm:items-start sm:text-left">
-            <h1 className="font-sora text-3xl font-bold sm:text-5xl">
+          <div className="flex flex-col items-center justify-center gap-5 text-center *:w-full sm:items-start sm:text-left">
+            <h1 className="font-sora text-2xl font-bold sm:text-5xl">
               The future is flexible.
             </h1>
-            <p className="max-w-lg text-lg font-medium text-gray-500">
+            <p className="max-w-lg p-5 pt-0 text-sm font-medium text-gray-500 sm:p-0 sm:text-lg">
               We believe in a world where finding a home is just a click away.
               Whether you&apos;re travelling for work or moving to a new city.
               Just bring your bags, and we&apos;ll handle your stay.

@@ -22,11 +22,13 @@ const BottomBar: FC = () => {
       ([entry]) => {
         if (entry.isIntersecting) {
           if (document.body) {
-            document.body.style.paddingBottom = "100px";
+            document.body.style.paddingBottom =
+              ref.current?.clientHeight + "px" || "100px";
           }
         } else {
           if (document.body) {
-            document.body.style.paddingBottom = "0px";
+            document.body.style.paddingBottom =
+              ref.current?.clientHeight + "px" || "100px";
           }
         }
       },
