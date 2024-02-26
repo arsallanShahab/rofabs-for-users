@@ -1,4 +1,4 @@
-"use client";
+// "use client";
 
 import BottomBar from "@/components/bottom-bar";
 import Footer from "@/components/footer";
