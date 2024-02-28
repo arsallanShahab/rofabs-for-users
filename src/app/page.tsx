@@ -21,9 +21,10 @@ import {
 import { differenceInDays, format } from "date-fns";
 import dayjs from "dayjs";
 import { debounce } from "lodash";
-import { CalendarIcon, SearchIcon } from "lucide-react";
+import { CalendarIcon, ChevronRight, SearchIcon } from "lucide-react";
 import Head from "next/head";
 import Image from "next/image";
+import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Key, useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -603,6 +604,80 @@ export default function Home() {
             </p>
           </SwiperSlide>
         </Swiper>
+        <div className="flex flex-col items-center gap-5 *:w-full">
+          <h1 className="text-center font-sora text-3xl font-bold sm:text-5xl">
+            Our Products
+          </h1>
+          <p className="max-w-xl text-center text-medium font-medium text-gray-500 sm:text-lg">
+            We have the best hotels, hostels and more for your next stay. From
+            cozy country homes to funky city apartments, we have something for
+            every taste and budget.
+          </p>
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
+            <div className="flex flex-col items-center gap-5 rounded-xl p-2">
+              <div className="w-full rounded-xl bg-gradient-to-b from-sky-600 to-transparent px-10 py-16 font-sora text-3xl font-medium text-white">
+                Hotel Channel
+                <span className="block">Manager</span>
+              </div>
+              <div className="flex flex-col gap-5 p-5 pt-0 *:w-full">
+                <p className="text-left text-sm font-medium text-black sm:text-base">
+                  Efficient online destribution and management of your hotel
+                  rooms and rates on multiple OTAs. Get more bookings and
+                  revenue with a channel manager.
+                </p>
+                <Link
+                  href="/products/hotel-channel-manager"
+                  className="mr-auto"
+                >
+                  <Button variant={"ghost"}>
+                    Learn more <ChevronRight className="ml-1 h-3.5 w-3.5" />
+                  </Button>
+                </Link>
+              </div>
+            </div>
+            <div className="flex flex-col items-center gap-5 rounded-xl p-2">
+              <div className="w-full rounded-xl bg-gradient-to-b from-amber-500 to-transparent px-10 py-16 font-sora text-3xl font-medium text-white">
+                Hotel Revenue Management Services
+              </div>
+              <div className="flex flex-col gap-5 p-5 pt-0 *:w-full">
+                <p className="text-left text-sm font-medium text-black sm:text-base">
+                  Efficient online destribution and management of your hotel
+                  rooms and rates on multiple OTAs. Get more bookings and
+                  revenue with a channel manager.
+                </p>
+                <Link
+                  href="/products/hotel-channel-manager"
+                  className="mr-auto"
+                >
+                  <Button variant={"ghost"}>
+                    Learn more <ChevronRight className="ml-1 h-3.5 w-3.5" />
+                  </Button>
+                </Link>
+              </div>
+            </div>
+            <div className="flex flex-col items-center gap-5 rounded-xl p-2">
+              <div className="w-full rounded-xl bg-gradient-to-b from-rose-500 to-transparent px-10 py-16 font-sora text-3xl font-medium text-white">
+                Hotel Booking
+                <span className="block">Engine</span>
+              </div>
+              <div className="flex flex-col gap-5 p-5 pt-0 *:w-full">
+                <p className="text-left text-sm font-medium text-black sm:text-base">
+                  Efficient online destribution and management of your hotel
+                  rooms and rates on multiple OTAs. Get more bookings and
+                  revenue with a channel manager.
+                </p>
+                <Link
+                  href="/products/hotel-channel-manager"
+                  className="mr-auto"
+                >
+                  <Button variant={"ghost"}>
+                    Learn more <ChevronRight className="ml-1 h-3.5 w-3.5" />
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
         <div className="flex flex-col gap-5 *:w-full">
           <h1 className="text-center font-sora text-3xl font-bold sm:text-5xl">
             Experience the Signature Stays
@@ -660,6 +735,7 @@ export default function Home() {
               />
             </div>
           </div>
+          di
         </div>
         <div className="grid gap-10 rounded-xl bg-zinc-100 p-5 sm:grid-cols-2 sm:p-10">
           <Image

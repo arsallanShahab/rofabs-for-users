@@ -10,13 +10,6 @@ const BottomBar: FC = () => {
   const pathname = usePathname();
   const ref = useRef<HTMLDivElement>(null);
 
-  // useEffect(() => {
-  //   const { current } = ref;
-  //   if (document.body) {
-  //     document.body.style.paddingBottom = "100px";
-  //   }
-  // }, []);
-  //intersection observer
   useEffect(() => {
     const { current } = ref;
     if (!current) return;
