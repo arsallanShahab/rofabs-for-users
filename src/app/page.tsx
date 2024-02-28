@@ -604,16 +604,16 @@ export default function Home() {
           </SwiperSlide>
         </Swiper>
         <div className="flex flex-col gap-5 *:w-full">
-          <h1 className="font-sora text-3xl font-bold sm:text-5xl">
+          <h1 className="text-center font-sora text-3xl font-bold sm:text-5xl">
             Experience the Signature Stays
           </h1>
-          <p className="max-w-lg text-medium font-medium text-gray-500 sm:text-lg">
+          <p className="mx-auto max-w-lg text-center text-medium font-medium text-gray-500 sm:text-lg">
             We have the best hotels, hostels and more for your next stay. From
             cozy country homes to funky city apartments, we have something for
             every taste and budget.
           </p>
           {/* //bento grid system */}
-          <div className="grid grid-cols-5 grid-rows-[200px] gap-5 pt-5">
+          <div className="mt-5 grid grid-cols-5 grid-rows-[200px] gap-5 pt-5">
             <div className="col-span-5 row-span-2 sm:col-span-3">
               <Image
                 src={"/images/apartments/img1.jpg"}
@@ -679,6 +679,36 @@ export default function Home() {
               Just bring your bags, and we&apos;ll handle your stay.
             </p>
           </div>
+        </div>
+        <div className="flex flex-col gap-5 *:w-full">
+          <h3 className="font-sora text-3xl font-bold sm:text-5xl">
+            Why Rofabs?
+          </h3>
+          <p className="max-w-xl text-medium font-medium text-gray-500 sm:text-lg">
+            We have the best hotels, hostels and more for your next stay. From
+            cozy country homes to funky city apartments, we have something for
+            every taste and budget.
+          </p>
+        </div>
+        <div className="flex flex-col items-end gap-5 *:w-full">
+          <h3 className="text-right font-sora text-3xl font-bold sm:text-5xl">
+            Rofabs: The future of living
+          </h3>
+          <p className="max-w-xl text-right text-medium font-medium text-gray-500 sm:text-lg">
+            We believe in a world where finding a home is just a click away.
+            Whether you&apos;re travelling for work or moving to a new city.
+            Just bring your bags, and we&apos;ll handle your stay.
+          </p>
+        </div>
+        <div className="flex flex-col gap-5 *:w-full">
+          <h3 className="font-sora text-3xl font-bold sm:text-5xl">
+            Not Better, But the Best
+          </h3>
+          <p className="max-w-xl text-medium font-medium text-gray-500 sm:text-lg">
+            We have the best hotels, hostels and more for your next stay. From
+            cozy country homes to funky city apartments, we have something for
+            every taste and budget.
+          </p>
         </div>
       </div>
     </>

@@ -69,31 +69,7 @@ const Footer = () => {
               </Link>
             </div>
           </div>
-          <div className="col-span-1">
-            <h3 className="font-rubik font-medium text-zinc-950">
-              Quick Links
-            </h3>
-            <div className="flex flex-col gap-2 pt-3 text-xs font-medium">
-              <Link
-                href="/about"
-                className="text-gray-500 duration-100 hover:translate-x-2  hover:text-black"
-              >
-                About Us
-              </Link>
-              <Link
-                href="/contact"
-                className="text-gray-500 duration-100 hover:translate-x-2  hover:text-black"
-              >
-                Contact Us
-              </Link>
-              <Link
-                href="/careers"
-                className="text-gray-500 duration-100 hover:translate-x-2  hover:text-black"
-              >
-                Careers
-              </Link>
-            </div>
-          </div>
+
           <div className="col-span-1">
             <h3 className=" font-rubik font-medium text-zinc-950">
               Legal Information
@@ -116,6 +92,31 @@ const Footer = () => {
                 className="text-gray-500 duration-100 hover:translate-x-2  hover:text-black"
               >
                 FAQ
+              </Link>
+            </div>
+          </div>
+          <div className="col-span-1">
+            <h3 className="font-rubik font-medium text-zinc-950">
+              Quick Links
+            </h3>
+            <div className="flex flex-col gap-2 pt-3 text-xs font-medium">
+              <Link
+                href="/about"
+                className="text-gray-500 duration-100 hover:translate-x-2  hover:text-black"
+              >
+                About Us
+              </Link>
+              <Link
+                href="/contact"
+                className="text-gray-500 duration-100 hover:translate-x-2  hover:text-black"
+              >
+                Contact Us
+              </Link>
+              <Link
+                href="/careers"
+                className="text-gray-500 duration-100 hover:translate-x-2  hover:text-black"
+              >
+                Careers
               </Link>
             </div>
           </div>
