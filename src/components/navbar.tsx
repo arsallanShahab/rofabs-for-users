@@ -317,16 +317,16 @@ const Navbar: FC = () => {
             ) : (
               <Button
                 onClick={onOpen}
-                variant={"outline"}
+                variant={"default"}
                 className={cn(
-                  "rounded-lg",
+                  "rounded-lg bg-sky-500 px-6 font-rubik text-xs font-medium",
                   isLoadingUser && "cursor-not-allowed opacity-50",
                 )}
               >
                 {isLoadingUser && (
                   <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
                 )}
-                Login
+                LOGIN
               </Button>
             )}
           </div>
