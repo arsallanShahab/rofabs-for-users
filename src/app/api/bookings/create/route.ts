@@ -47,6 +47,47 @@ export async function POST(request: Request) {
 
   // console.log(payload, "payload");
   const randomNum = Math.floor(Math.random() * 1000);
+  const monthAbbr = [
+    "JAN",
+    "FEB",
+    "MAR",
+    "APR",
+    "MAY",
+    "JUN",
+    "JUL",
+    "AUG",
+    "SEP",
+    "OCT",
+    "NOV",
+    "DEC",
+  ];
+
+  // Get today's date
+  const date = new Date();
+
+  // Format the date parts
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = monthAbbr[date.getMonth()];
+  const year = date.getFullYear().toString().slice(-2);
+
+  // Create the folio ID prefix
+  const folioIdPrefix = `${day}${month}${year}`;
+
+  // Find bookings with a folio ID that starts with the prefix
+  // const bookings = await Booking.find({
+  //   folioId: new RegExp(`^${folioIdPrefix}`, "i"),
+  // });
+  const bookings = await db
+    .collection("bookings")
+    .find({ folioId: new RegExp(`^${folioIdPrefix}`, "i") })
+    .toArray();
+
+  // Get the next folio number, padded with leading zeros
+  const folioNumber = (bookings.length + 1).toString().padStart(4, "0");
+
+  // Create the folio ID
+  const folioId = `#${folioIdPrefix}${folioNumber}`;
+
   const instance = new Razorpay({
     key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID as string,
     key_secret: process.env.RAZORPAY_KEY_SECRET as string,
@@ -68,9 +109,14 @@ export async function POST(request: Request) {
       roomCategory: payload.roomCategory,
       propertyId: payload.propertyId,
       userId: payload.userId,
+      folioId: folioId,
     },
   });
+
+  //create folio id here
+
   const booking = {
+    folioId: folioId,
     user: new ObjectId(payload.userId),
     propertyId: new ObjectId(payload.propertyId),
     bookingType: BookingTypeEnum.ONLINE,
