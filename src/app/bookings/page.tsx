@@ -211,6 +211,7 @@ const Page: FC = () => {
           propertyId: data.notes.propertyId,
           userId: data.notes.userId,
           orderId: data.orderId,
+          orderType: "booking",
         },
       });
       razorpay.open();
